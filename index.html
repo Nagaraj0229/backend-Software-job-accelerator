@@ -1,0 +1,2591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Backend Engineer 30-Day Job Accelerator</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+============================================================ */
+:root{
+  --accent:#6366f1;
+  --accent-2:#8b5cf6;
+  --accent-rgb:99,102,241;
+  --bg:#f5f6fa;
+  --bg-elevated:#ffffff;
+  --bg-card:#ffffff;
+  --bg-hover:#eef0f6;
+  --border:#e4e6ee;
+  --text:#12141c;
+  --text-muted:#6b7080;
+  --text-faint:#9aa0b0;
+  --success:#10b981;
+  --warning:#f59e0b;
+  --danger:#ef4444;
+  --info:#3b82f6;
+  --shadow-sm:0 1px 2px rgba(20,20,40,.04);
+  --shadow-md:0 4px 16px rgba(20,20,40,.06);
+  --shadow-lg:0 12px 40px rgba(20,20,40,.10);
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:20px;
+  --sidebar-w:260px;
+  --header-h:64px;
+  --font: -apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0a0b0f;
+  --bg-elevated:#121319;
+  --bg-card:#15161d;
+  --bg-hover:#1d1f28;
+  --border:#24262f;
+  --text:#f3f4f8;
+  --text-muted:#9498a8;
+  --text-faint:#5c6070;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow-md:0 4px 20px rgba(0,0,0,.35);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.5);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+  transition:background .25s ease,color .25s ease;
+}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text-faint);}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;color:var(--text);}
+
+/* ============================================================
+   APP SHELL
+============================================================ */
+#app{display:flex;height:100vh;width:100vw;}
+
+/* SIDEBAR */
+#sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  background:var(--bg-elevated);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  transition:transform .25s ease, width .25s ease;
+  z-index:50;
+}
+.sidebar-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:20px 20px 16px;
+}
+.brand-logo{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 4px 14px rgba(var(--accent-rgb),.35);
+  flex-shrink:0;
+}
+.brand-text{overflow:hidden;}
+.brand-title{font-size:13.5px;font-weight:700;line-height:1.25;white-space:nowrap;}
+.brand-sub{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.sidebar-search{
+  margin:0 14px 10px;
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg-hover);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:8px 10px;
+  color:var(--text-faint);
+  font-size:12.5px;
+}
+.sidebar-search input{background:transparent;border:none;outline:none;flex:1;color:var(--text);font-size:12.5px;}
+.kbd{
+  font-size:10.5px;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:5px;padding:1px 5px;color:var(--text-faint);
+}
+
+.sidebar-nav{flex:1;overflow-y:auto;padding:4px 10px 10px;}
+.nav-section-label{
+  font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text-faint);font-weight:700;
+  padding:14px 10px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8.5px 10px;margin-bottom:2px;
+  border-radius:var(--radius-sm);
+  font-size:13.3px;font-weight:500;color:var(--text-muted);
+  transition:background .15s ease,color .15s ease;
+  position:relative;
+}
+.nav-item .nav-icon{width:17px;text-align:center;font-size:14.5px;flex-shrink:0;}
+.nav-item .nav-badge{
+  margin-left:auto;font-size:10.5px;font-weight:700;
+  background:var(--bg-hover);color:var(--text-muted);
+  border-radius:20px;padding:1px 7px;
+}
+.nav-item:hover{background:var(--bg-hover);color:var(--text);}
+.nav-item.active{
+  background:linear-gradient(135deg,rgba(var(--accent-rgb),.14),rgba(var(--accent-rgb),.05));
+  color:var(--accent);font-weight:700;
+}
+.nav-item.active .nav-badge{background:var(--accent);color:#fff;}
+.nav-item.active::before{
+  content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+  width:3px;height:60%;background:var(--accent);border-radius:0 4px 4px 0;
+}
+
+.sidebar-footer{
+  padding:12px;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.streak-pill{
+  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  background:var(--bg-hover);padding:7px 10px;border-radius:20px;flex:1;
+}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;height:100vh;min-width:0;}
+#header{
+  height:var(--header-h);flex-shrink:0;
+  display:flex;align-items:center;gap:14px;
+  padding:0 24px;
+  border-bottom:1px solid var(--border);
+  background:rgba(var(--accent-rgb),0);
+  backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb, var(--bg) 70%, transparent);
+}
+#menuToggle{
+  display:none;background:var(--bg-card);border:1px solid var(--border);
+  width:36px;height:36px;border-radius:10px;align-items:center;justify-content:center;
+  font-size:16px;color:var(--text);
+}
+.header-title{font-size:18px;font-weight:700;}
+.header-sub{font-size:12px;color:var(--text-muted);margin-top:1px;}
+.header-spacer{flex:1;}
+.header-actions{display:flex;align-items:center;gap:10px;}
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;border:1px solid var(--border);
+  background:var(--bg-card);display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--text-muted);transition:all .15s ease;
+}
+.icon-btn:hover{background:var(--bg-hover);color:var(--text);transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 16px;border-radius:10px;border:1px solid var(--border);
+  background:var(--bg-card);color:var(--text);font-size:13px;font-weight:600;
+  transition:all .15s ease;white-space:nowrap;
+}
+.btn:hover{background:var(--bg-hover);transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(var(--accent-rgb),.3);
+}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(var(--accent-rgb),.45);}
+.btn-danger{color:var(--danger);}
+.btn-sm{padding:6px 11px;font-size:12px;border-radius:8px;}
+.btn-icon-only{padding:9px;}
+
+#viewport{flex:1;overflow-y:auto;padding:24px 28px 60px;}
+.view{display:none;animation:fadeUp .35s ease;}
+.view.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;gap:16px;flex-wrap:wrap;}
+.page-head h1{font-size:22px;font-weight:800;letter-spacing:-.01em;}
+.page-head p{color:var(--text-muted);font-size:13px;margin-top:4px;}
+
+/* CARDS & GRID */
+.grid{display:grid;gap:16px;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media(max-width:1200px){.grid-4{grid-template-columns:repeat(2,1fr);}.grid-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr;}}
+
+.card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:18px;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease, transform .2s ease;
+}
+.card:hover{box-shadow:var(--shadow-md);}
+.glass{
+  background:color-mix(in srgb, var(--bg-card) 70%, transparent);
+  backdrop-filter:blur(16px);
+  border:1px solid color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.kpi-card{position:relative;overflow:hidden;}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.kpi-icon{
+  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;background:rgba(var(--accent-rgb),.12);color:var(--accent);
+}
+.kpi-trend{font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.trend-up{color:var(--success);background:rgba(16,185,129,.12);}
+.trend-down{color:var(--danger);background:rgba(239,68,68,.12);}
+.kpi-value{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.kpi-label{font-size:12.5px;color:var(--text-muted);margin-top:2px;}
+
+.section-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-title .tag{font-size:10.5px;background:var(--bg-hover);color:var(--text-muted);padding:2px 8px;border-radius:20px;font-weight:700;}
+
+/* PROGRESS */
+.progress-track{height:8px;border-radius:20px;background:var(--bg-hover);overflow:hidden;}
+.progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .6s cubic-bezier(.4,0,.2,1);}
+.progress-fill.success{background:linear-gradient(90deg,#10b981,#34d399);}
+.progress-fill.warn{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-card);}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px;}
+thead th{
+  text-align:left;padding:11px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--text-faint);border-bottom:1px solid var(--border);background:var(--bg-hover);white-space:nowrap;
+  position:sticky;top:0;
+}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--bg-hover);}
+tbody td.wrap{white-space:normal;max-width:220px;}
+
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.badge-gray{background:var(--bg-hover);color:var(--text-muted);}
+.badge-blue{background:rgba(59,130,246,.13);color:#3b82f6;}
+.badge-green{background:rgba(16,185,129,.13);color:#10b981;}
+.badge-yellow{background:rgba(245,158,11,.15);color:#f59e0b;}
+.badge-red{background:rgba(239,68,68,.13);color:#ef4444;}
+.badge-purple{background:rgba(139,92,246,.14);color:#8b5cf6;}
+
+/* FORMS */
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:5px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--border);
+  background:var(--bg-hover);font-size:13px;outline:none;transition:border-color .15s ease;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);}
+.field textarea{resize:vertical;min-height:70px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:640px){.form-row{grid-template-columns:1fr;}}
+
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.toolbar input[type=text],.toolbar input[type=search]{
+  padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg-card);
+  font-size:13px;outline:none;min-width:200px;
+}
+.toolbar select{padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg-card);font-size:13px;}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(10,11,15,.55);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:20px;
+}
+.modal-overlay.active{display:flex;}
+.modal{
+  background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);
+  width:100%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);
+  animation:modalIn .25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+.modal-head h3{font-size:15.5px;font-weight:700;}
+.modal-body{padding:20px 22px;}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--border);}
+
+/* TOAST */
+#toastWrap{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:10px;}
+.toast{
+  background:var(--bg-elevated);border:1px solid var(--border);box-shadow:var(--shadow-lg);
+  border-radius:12px;padding:12px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;
+  min-width:240px;animation:toastIn .3s ease;
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
+.toast.success{border-left:3px solid var(--success);}
+.toast.error{border-left:3px solid var(--danger);}
+.toast.info{border-left:3px solid var(--info);}
+
+/* MISC */
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.empty-state .em-icon{font-size:36px;margin-bottom:10px;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg-hover);border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--text-muted);}
+.hidden{display:none !important;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;}
+.mt-8{margin-top:8px;}.mt-16{margin-top:16px;}.mb-8{margin-bottom:8px;}
+.text-muted{color:var(--text-muted);}
+.day-card{cursor:pointer;}
+.day-card.locked{opacity:.45;cursor:not-allowed;}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.pin-btn.pinned{color:var(--warning);}
+canvas{max-width:100%;}
+#confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+@media(max-width:900px){
+  #sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);box-shadow:var(--shadow-lg);}
+  #sidebar.open{transform:translateX(0);}
+  #menuToggle{display:flex;}
+  #viewport{padding:18px;}
+}
+</style>
+</head>
+<body data-theme="light">
+<canvas id="confettiCanvas"></canvas>
+<div id="app">
+  <aside id="sidebar"></aside>
+  <div id="main">
+    <header id="header"></header>
+    <main id="viewport"></main>
+  </div>
+</div>
+<div id="modalRoot"></div>
+<div id="toastWrap"></div>
+
+<script>
+window.APP_VERSION = "1.0.0";
+
+/* STORE */
+const STORAGE_KEY = "beja_v1_state";
+class Store{
+  static load(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw) return JSON.parse(raw); }
+    catch(e){ console.warn("Store load failed", e); }
+    return null;
+  }
+  static save(state){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch(e){ console.warn("Store save failed", e); }
+  }
+  static clear(){ localStorage.removeItem(STORAGE_KEY); }
+}
+
+/* UTILS */
+const Utils = {
+  uid(prefix){ prefix = prefix || "id"; return prefix + "_" + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); },
+  todayISO(){ return new Date().toISOString().slice(0,10); },
+  fmtDate(iso){
+    if(!iso) return "—";
+    var d = new Date(iso+"T00:00:00");
+    if(isNaN(d)) return iso;
+    return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+  },
+  daysBetween(a,b){
+    var d1 = new Date(a+"T00:00:00"), d2 = new Date(b+"T00:00:00");
+    return Math.round((d2-d1)/86400000);
+  },
+  clamp(n,min,max){ return Math.max(min,Math.min(max,n)); },
+  escapeHtml(str){
+    if(str===undefined||str===null) return "";
+    return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+  },
+  debounce(fn, wait){
+    var t; return function(){ var args=arguments; clearTimeout(t); t=setTimeout(function(){ fn.apply(null,args); }, wait); };
+  },
+  download(filename, content, mime){
+    mime = mime || "text/plain";
+    var blob = new Blob([content], {type: mime});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+    a.remove(); URL.revokeObjectURL(url);
+  },
+  toCSV(rows, columns){
+    var esc = function(v){ v = (v===undefined||v===null)?"":String(v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+    var header = columns.map(function(c){return esc(c.label);}).join(",");
+    var body = rows.map(function(r){ return columns.map(function(c){return esc(r[c.key]);}).join(","); }).join("\n");
+    return header + "\n" + body;
+  },
+  parseCSV(text){
+    var rows = [];
+    var row = [], field = "", inQuotes = false;
+    for(var i=0;i<text.length;i++){
+      var c = text[i];
+      if(inQuotes){
+        if(c === '"'){ if(text[i+1] === '"'){ field+='"'; i++; } else inQuotes = false; }
+        else field += c;
+      } else {
+        if(c === '"') inQuotes = true;
+        else if(c === ','){ row.push(field); field=""; }
+        else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=""; }
+        else if(c === '\r'){ /* skip */ }
+        else field += c;
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    return rows;
+  }
+};
+
+/* TOAST */
+const Toast = {
+  show(msg, type, icon){
+    type = type || "info";
+    var wrap = document.getElementById("toastWrap");
+    var el = document.createElement("div");
+    el.className = "toast " + type;
+    var ic = icon || (type==="success"?"✅":type==="error"?"⚠️":"ℹ️");
+    el.innerHTML = "<span>"+ic+"</span><span>"+Utils.escapeHtml(msg)+"</span>";
+    wrap.appendChild(el);
+    setTimeout(function(){
+      el.style.transition="opacity .3s ease, transform .3s ease";
+      el.style.opacity="0"; el.style.transform="translateX(30px)";
+      setTimeout(function(){ el.remove(); },300);
+    }, 2800);
+  }
+};
+
+/* CONFETTI */
+const Confetti = {
+  fire(){
+    var canvas = document.getElementById("confettiCanvas");
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    var ctx = canvas.getContext("2d");
+    var colors = ["#6366f1","#8b5cf6","#10b981","#f59e0b","#ef4444","#3b82f6"];
+    var pieces = [];
+    for(var i=0;i<140;i++){
+      pieces.push({
+        x: Math.random()*canvas.width, y: -20 - Math.random()*canvas.height*0.3,
+        w: 6+Math.random()*6, h: 8+Math.random()*10,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        rot: Math.random()*360, vRot: (Math.random()-0.5)*10,
+        vy: 2+Math.random()*3.5, vx: (Math.random()-0.5)*3,
+        opacity: 1
+      });
+    }
+    var frame = 0;
+    var maxFrames = 130;
+    function tick(){
+      frame++;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(function(p){
+        p.x += p.vx; p.y += p.vy; p.rot += p.vRot;
+        if(frame > maxFrames*0.6) p.opacity -= 0.03;
+        ctx.save();
+        ctx.globalAlpha = Math.max(p.opacity,0);
+        ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      if(frame < maxFrames) requestAnimationFrame(tick);
+      else ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    tick();
+  }
+};
+
+/* ============================================================
+   STATIC REFERENCE DATA
+============================================================ */
+const STUDY_TOPICS = [
+  {cat:"Backend Core", items:["Node.js","Express","Fastify","NestJS","TypeScript","REST API Design","GraphQL"]},
+  {cat:"Databases", items:["PostgreSQL","MongoDB","Redis","Database Indexing","Transactions & ACID"]},
+  {cat:"Cloud & DevOps", items:["Docker","AWS EC2","AWS Lambda","SQS","SNS","API Gateway","CloudWatch","CI/CD","Linux Fundamentals","Git"]},
+  {cat:"Messaging & Realtime", items:["Kafka","RabbitMQ","WebSockets"]},
+  {cat:"Security", items:["JWT","OAuth 2.0","RBAC","Rate Limiting"]},
+  {cat:"Architecture", items:["Caching Strategies","System Design Fundamentals","Microservices","Testing (Unit/Integration)"]}
+];
+
+const DSA_CATEGORIES = ["Arrays","Strings","HashMap","Linked List","Queue","Stack","Trees","Graphs","Heap","Trie","Sliding Window","Binary Search","Dynamic Programming","Greedy","Backtracking"];
+
+const SYSTEM_DESIGN_PROBLEMS = [
+  {name:"URL Shortener", difficulty:"Easy"},
+  {name:"Rate Limiter", difficulty:"Easy"},
+  {name:"Chat Application", difficulty:"Medium"},
+  {name:"Notification Service", difficulty:"Medium"},
+  {name:"API Gateway", difficulty:"Medium"},
+  {name:"Distributed Cache", difficulty:"Medium"},
+  {name:"BookMyShow", difficulty:"Hard"},
+  {name:"WhatsApp", difficulty:"Hard"},
+  {name:"Instagram", difficulty:"Hard"},
+  {name:"Twitter", difficulty:"Hard"},
+  {name:"Uber", difficulty:"Hard"},
+  {name:"Netflix", difficulty:"Hard"},
+  {name:"Payment Gateway", difficulty:"Hard"}
+];
+
+const ACHIEVEMENT_DEFS = [
+  {id:"apps_10", label:"Getting Started", desc:"Applied to 10 jobs", icon:"🎯", check:function(s){return s.applications.length>=10;}},
+  {id:"apps_100", label:"Century Club", desc:"Applied to 100 jobs", icon:"💯", check:function(s){return s.applications.length>=100;}},
+  {id:"apps_500", label:"Application Machine", desc:"Applied to 500 jobs", icon:"🚀", check:function(s){return s.applications.length>=500;}},
+  {id:"streak_7", label:"Week Warrior", desc:"7-day streak", icon:"🔥", check:function(s){return computeStreak(s)>=7;}},
+  {id:"streak_30", label:"Iron Will", desc:"30-day streak", icon:"🏆", check:function(s){return computeStreak(s)>=30;}},
+  {id:"node_done", label:"Node Ninja", desc:"Finished Node.js", icon:"🟢", check:function(s){return !!s.study["Node.js"] && s.study["Node.js"].done;}},
+  {id:"aws_done", label:"Cloud Native", desc:"Finished AWS EC2", icon:"☁️", check:function(s){return !!s.study["AWS EC2"] && s.study["AWS EC2"].done;}},
+  {id:"dsa_100", label:"Algorithm Ace", desc:"Completed 100 DSA problems", icon:"🧠", check:function(s){return totalDSASolved(s)>=100;}},
+  {id:"interview_scheduled", label:"Foot in the Door", desc:"First interview scheduled", icon:"📅", check:function(s){return s.interviews.length>=1;}},
+  {id:"interview_cleared", label:"Cleared a Round", desc:"Cleared an interview round", icon:"✅", check:function(s){return s.interviews.some(function(i){return i.result==="Passed";});}},
+  {id:"first_offer", label:"First Offer!", desc:"Received your first offer", icon:"🎉", check:function(s){return s.applications.some(function(a){return a.status==="Offer"||a.status==="Accepted";});}},
+  {id:"dream_company", label:"Dream Big", desc:"Applied to a dream company", icon:"⭐", check:function(s){return s.companies.some(function(c){return c.dream && c.applied;});}}
+];
+
+function computeStreak(s){
+  var dates = Object.keys(s.dailyLogs||{}).filter(function(d){ var l=s.dailyLogs[d]; return l && ((l.applications||0)>0 || (l.studyHours||0)>0); });
+  if(!dates.length) return 0;
+  dates.sort();
+  var streak = 0, cursor = Utils.todayISO();
+  var set = {}; dates.forEach(function(d){set[d]=true;});
+  while(set[cursor]){ streak++; var d=new Date(cursor+"T00:00:00"); d.setDate(d.getDate()-1); cursor=d.toISOString().slice(0,10); }
+  return streak;
+}
+function totalDSASolved(s){
+  var total = 0;
+  DSA_CATEGORIES.forEach(function(c){ var e=s.dsa[c]; if(e) total += (e.solved||0); });
+  return total;
+}
+
+function buildRoadmap(){
+  var themes = [
+    "Foundations & Setup","Node.js Core","Express Fundamentals","TypeScript for Backend","REST API Design",
+    "PostgreSQL Deep Dive","MongoDB & Mongoose","Redis & Caching","Authentication (JWT/OAuth)","Authorization (RBAC)",
+    "Docker Fundamentals","AWS EC2 & S3","AWS Lambda & Serverless","Message Queues (SQS/SNS)","Kafka Basics",
+    "WebSockets & Realtime","Rate Limiting & Throttling","Testing Strategies","CI/CD Pipelines","System Design Basics",
+    "System Design: Scaling","System Design: Databases","Microservices Architecture","API Gateway Patterns","Mock Interview Prep",
+    "Behavioral & HR Prep","Resume & LinkedIn Polish","Mock Technical Interview","Company-Specific Prep","Final Review & Offer Push"
+  ];
+  var roadmap = [];
+  for(var i=0;i<30;i++){
+    roadmap.push({
+      day: i+1,
+      theme: themes[i],
+      backendTopic: STUDY_TOPICS[i % STUDY_TOPICS.length].items[i % STUDY_TOPICS[i % STUDY_TOPICS.length].items.length],
+      dsaTopic: DSA_CATEGORIES[i % DSA_CATEGORIES.length],
+      systemDesignTopic: SYSTEM_DESIGN_PROBLEMS[i % SYSTEM_DESIGN_PROBLEMS.length].name,
+      englishPractice: "20 min spoken English / mock self-recording",
+      hrPrep: "Prepare 1 STAR story + review common HR Q&A",
+      applicationsTarget: 5,
+      recruiterOutreach: 3,
+      mockInterview: (i+1) % 5 === 0,
+      status: i===0 ? "in-progress" : "locked",
+      completion: 0,
+      notes: ""
+    });
+  }
+  return roadmap;
+}
+
+function buildQuestionBank(){
+  var bank = [];
+  var add = function(cat, q, a, diff){ bank.push({id:Utils.uid("q"), category:cat, question:q, answer:a, difficulty:diff, favorite:false, completed:false}); };
+
+  var nodeQ = [
+    ["What is the Node.js event loop and how does it work?","Node.js uses a single-threaded event loop with phases (timers, pending callbacks, poll, check, close) that handle async operations via libuv, delegating I/O to a thread pool while keeping the main thread non-blocking.","Medium"],
+    ["Explain the difference between process.nextTick() and setImmediate().","process.nextTick() queues a callback to run before the event loop continues to the next phase, while setImmediate() runs on the check phase after I/O events, giving nextTick higher priority.","Medium"],
+    ["What are streams in Node.js and what types exist?","Streams handle reading/writing data in chunks rather than all at once. Types include Readable, Writable, Duplex, and Transform streams, useful for large files or network data.","Medium"],
+    ["How does Node.js handle child processes?","Via the child_process module using spawn, exec, execFile, and fork, allowing CPU-bound work or shell commands to run outside the main event loop.","Medium"],
+    ["What is the difference between require and import in Node.js?","require is CommonJS, synchronous, and dynamic; import is ES Modules, supports static analysis, tree-shaking, and top-level await, requiring 'type: module' or .mjs.","Easy"],
+    ["Explain clustering in Node.js.","The cluster module lets you fork multiple worker processes sharing the same server port to utilize multi-core CPUs, improving throughput for I/O and CPU-bound apps.","Medium"],
+    ["What is middleware in the context of Node.js frameworks?","Functions that execute during the request-response cycle, with access to req, res, and next, used for logging, auth, parsing, and error handling.","Easy"],
+    ["How do you handle unhandled promise rejections in Node.js?","Attach a listener to process.on('unhandledRejection'), and prefer try/catch with async/await or .catch() on promises to handle errors explicitly.","Medium"],
+    ["What is the purpose of the Buffer class?","Buffer handles raw binary data outside the V8 heap, useful for file I/O, network protocols, and streams where data isn't UTF-8 text.","Easy"],
+    ["How would you debug a memory leak in a Node.js application?","Use heap snapshots via Chrome DevTools or --inspect, track heap growth with process.memoryUsage(), look for unbounded caches, event listener leaks, or global references.","Hard"],
+    ["What is the event emitter pattern and where is it used?","A pub-sub pattern where objects emit named events that listeners subscribe to; used internally by streams, HTTP servers, and custom modules for decoupled communication.","Easy"],
+    ["Explain the difference between synchronous and asynchronous file operations in Node.js.","Synchronous methods (fs.readFileSync) block the event loop until completion; asynchronous methods (fs.readFile) use callbacks/promises and don't block, preferred for scalable servers.","Easy"]
+  ];
+  nodeQ.forEach(function(r){ add("Node.js", r[0], r[1], r[2]); });
+
+  var tsQ = [
+    ["What are generics in TypeScript and why use them?","Generics let you write reusable, type-safe components that work with multiple types, deferring the specific type until usage, like Array<T> or a custom Repository<T>.","Medium"],
+    ["Explain the difference between interface and type in TypeScript.","Interfaces are extendable and mergeable, ideal for object shapes; type aliases can represent unions, primitives, and mapped types but can't be re-opened after declaration.","Medium"],
+    ["What is the purpose of tsconfig.json's strict flag?","It enables a bundle of strict type-checking options (strictNullChecks, noImplicitAny, etc.) that catch more bugs at compile time.","Easy"],
+    ["What are decorators in TypeScript and where are they commonly used?","Decorators are functions that add metadata or modify classes/methods/properties at design time; commonly used in NestJS for routes, DI, and validation.","Medium"],
+    ["Explain utility types like Partial, Pick, and Omit.","Partial makes all properties optional, Pick selects a subset of keys, and Omit excludes specific keys, all used to derive new types from existing ones without duplication.","Medium"],
+    ["What is type narrowing and how is it achieved?","Refining a broader type to a more specific one within a code branch using typeof, instanceof, in checks, or custom type guards.","Easy"],
+    ["How do you type asynchronous functions returning different shapes on success and failure?","Use discriminated unions like Promise<{success:true,data:T}|{success:false,error:string}> so callers must handle both branches explicitly.","Medium"],
+    ["What is the difference between unknown and any?","any disables type checking entirely, while unknown requires narrowing before use, offering safety while still allowing flexible input types.","Easy"]
+  ];
+  tsQ.forEach(function(r){ add("TypeScript", r[0], r[1], r[2]); });
+
+  var nestQ = [
+    ["What is dependency injection in NestJS?","A design pattern where NestJS's IoC container creates and supplies class dependencies automatically via constructor injection, improving testability and modularity.","Medium"],
+    ["Explain the module system in NestJS.","Modules organize related providers, controllers, and imports/exports into cohesive units, encapsulating functionality and enabling feature-based architecture.","Easy"],
+    ["What are guards, interceptors, and pipes in NestJS?","Guards handle authorization before route execution, interceptors wrap request/response handling (logging, transformation), and pipes validate/transform incoming data.","Medium"],
+    ["How does NestJS handle exception filtering?","Exception filters catch unhandled exceptions and format consistent error responses; you can create custom filters extending ExceptionFilter for domain-specific errors.","Medium"],
+    ["What is the difference between a provider and a controller in NestJS?","Controllers handle incoming requests and return responses; providers (services, repositories) contain business logic and are injected into controllers or other providers.","Easy"]
+  ];
+  nestQ.forEach(function(r){ add("NestJS", r[0], r[1], r[2]); });
+
+  var expressQ = [
+    ["How does routing work in Express?","Express matches incoming requests to registered route handlers based on HTTP method and path, executing middleware in the order they're defined until a response is sent.","Easy"],
+    ["What is error-handling middleware in Express?","Middleware with four arguments (err, req, res, next) that Express calls when next(err) is invoked or a synchronous error is thrown, centralizing error responses.","Medium"],
+    ["How would you structure a large Express application?","Separate routes, controllers, services, models, and middleware into folders; use a Router per resource, environment-based config, and a central app.js for wiring.","Medium"]
+  ];
+  expressQ.forEach(function(r){ add("Express", r[0], r[1], r[2]); });
+
+  var jsQ = [
+    ["Explain closures with a practical example.","A closure is a function that retains access to its lexical scope even after the outer function returns, commonly used for private state like counters or memoized caches.","Easy"],
+    ["What is the event loop and call stack in JavaScript?","The call stack executes synchronous code; the event loop moves completed async callbacks from queues (microtask/macrotask) onto the stack once it's empty.","Medium"],
+    ["Difference between == and ===?","== compares values after type coercion, while === compares both value and type without coercion, generally preferred for predictable comparisons.","Easy"],
+    ["Explain promises vs async/await.","Promises represent eventual completion of async operations with .then/.catch chaining; async/await is syntactic sugar over promises that makes async code read like synchronous code.","Easy"],
+    ["What is the prototype chain?","JavaScript objects inherit properties/methods through a chain of prototype references, ultimately ending at Object.prototype, enabling inheritance without classical classes.","Medium"],
+    ["What is debouncing vs throttling?","Debouncing delays execution until a pause in events occurs; throttling limits execution to at most once per interval regardless of event frequency.","Medium"],
+    ["Explain the difference between call, apply, and bind.","call and apply invoke a function immediately with a specified 'this' (apply takes an array of args), while bind returns a new function with 'this' permanently set.","Easy"]
+  ];
+  jsQ.forEach(function(r){ add("JavaScript", r[0], r[1], r[2]); });
+
+  var pgQ = [
+    ["What is the difference between clustered and non-clustered indexes?","A clustered index determines the physical storage order of rows (one per table), while non-clustered indexes are separate structures pointing back to row locations.","Medium"],
+    ["Explain ACID properties in PostgreSQL.","Atomicity, Consistency, Isolation, Durability — guarantees that transactions fully complete or roll back, maintain valid state, don't interfere with each other, and persist after commit.","Easy"],
+    ["What are the different isolation levels in PostgreSQL?","Read Committed (default), Repeatable Read, and Serializable, each trading off concurrency for protection against phenomena like dirty reads, non-repeatable reads, and phantom reads.","Hard"],
+    ["How do you optimize a slow SQL query?","Use EXPLAIN ANALYZE to inspect the query plan, add appropriate indexes, avoid SELECT *, reduce joins where possible, and consider denormalization or materialized views.","Medium"],
+    ["What is a database connection pool and why is it important?","A pool reuses a fixed set of open connections rather than opening/closing per request, reducing overhead and preventing exhausting the database's max connection limit.","Medium"]
+  ];
+  pgQ.forEach(function(r){ add("PostgreSQL", r[0], r[1], r[2]); });
+
+  var mongoQ = [
+    ["When would you choose MongoDB over a relational database?","When data is naturally document-shaped, schema flexibility is needed, or horizontal scaling for high write throughput matters more than complex multi-table joins.","Medium"],
+    ["What is the aggregation pipeline in MongoDB?","A sequence of stages (match, group, sort, project, etc.) that process documents to transform and compute results, similar to SQL GROUP BY but more composable.","Medium"],
+    ["How does indexing work in MongoDB?","Indexes are B-tree structures on fields that speed up queries; compound indexes support multi-field queries, and the order of fields matters for query efficiency.","Medium"]
+  ];
+  mongoQ.forEach(function(r){ add("MongoDB", r[0], r[1], r[2]); });
+
+  var redisQ = [
+    ["What are common use cases for Redis in backend systems?","Caching frequently-read data, session storage, rate limiting counters, pub/sub messaging, distributed locks, and leaderboard rankings via sorted sets.","Easy"],
+    ["Explain cache invalidation strategies.","Common strategies include TTL expiration, write-through (update cache on write), write-behind, and explicit invalidation on data mutation to avoid stale reads.","Medium"],
+    ["What is the difference between Redis persistence modes RDB and AOF?","RDB takes point-in-time snapshots for fast restarts but can lose recent writes; AOF logs every write operation for better durability at the cost of larger file size.","Hard"]
+  ];
+  redisQ.forEach(function(r){ add("Redis", r[0], r[1], r[2]); });
+
+  var awsQ = [
+    ["What is the difference between EC2 and Lambda?","EC2 provides persistent virtual servers you manage and pay for continuously; Lambda runs stateless functions on-demand, billed per invocation/duration, ideal for event-driven workloads.","Easy"],
+    ["Explain how SQS and SNS differ.","SQS is a message queue for point-to-point, pull-based delivery with guaranteed processing; SNS is a pub/sub push-based service that fans out messages to multiple subscribers.","Medium"],
+    ["What is the purpose of an API Gateway in AWS?","It acts as a managed front door for APIs, handling routing, throttling, authorization, and request/response transformation before forwarding to backend services like Lambda.","Medium"],
+    ["How would you design for high availability in AWS?","Deploy across multiple Availability Zones, use auto-scaling groups, load balancers, managed multi-AZ databases, and health checks with automated failover.","Hard"],
+    ["What is CloudWatch used for?","Centralized monitoring and logging service that collects metrics, logs, and alarms across AWS resources for observability and alerting.","Easy"]
+  ];
+  awsQ.forEach(function(r){ add("AWS", r[0], r[1], r[2]); });
+
+  var dockerQ = [
+    ["What is the difference between a Docker image and a container?","An image is an immutable, read-only template with app code and dependencies; a container is a running (or stopped) instance of that image with its own writable layer.","Easy"],
+    ["Explain multi-stage builds in Docker.","Using multiple FROM statements in a Dockerfile to separate build-time dependencies from the final runtime image, producing smaller, more secure production images.","Medium"],
+    ["How do you persist data in Docker containers?","Using volumes or bind mounts to store data outside the container's writable layer so it survives container restarts and removal.","Easy"]
+  ];
+  dockerQ.forEach(function(r){ add("Docker", r[0], r[1], r[2]); });
+
+  var sdQ = [
+    ["How would you design a URL shortener?","Use a base62 encoded counter or hash for short codes, store mappings in a key-value store with an index, cache hot redirects, and handle collision checks with retries.","Medium"],
+    ["How would you design a rate limiter?","Use algorithms like token bucket or sliding window log/counter, backed by Redis for distributed counting, applying limits per user/IP with clear HTTP 429 responses.","Medium"],
+    ["How do you scale a system to handle 10x traffic?","Identify bottlenecks first, add horizontal scaling with load balancers, introduce caching layers, use read replicas or sharding for the database, and adopt async processing where possible.","Hard"],
+    ["What is the CAP theorem?","In a distributed system, you can only guarantee two of Consistency, Availability, and Partition tolerance simultaneously during a network partition.","Hard"],
+    ["How would you design a notification service supporting email, SMS, and push?","Use a queue-based fan-out architecture where a notification service publishes events to channel-specific workers, with retries, templating, and delivery tracking per channel.","Hard"],
+    ["Explain database sharding.","Splitting a large database horizontally across multiple servers based on a shard key, distributing load and storage while requiring careful routing and cross-shard query handling.","Hard"],
+    ["What is eventual consistency and when is it acceptable?","A model where replicas converge to the same state over time rather than instantly; acceptable for systems like social feeds or analytics where instant consistency isn't critical.","Medium"]
+  ];
+  sdQ.forEach(function(r){ add("System Design", r[0], r[1], r[2]); });
+
+  var restQ = [
+    ["What makes an API RESTful?","Statelessness, resource-based URLs, standard HTTP verbs, uniform interface, and use of representations (usually JSON) to transfer resource state.","Easy"],
+    ["How do you version a REST API?","Common approaches include URL versioning (/v1/), header versioning (Accept header), or query parameter versioning, with URL versioning being the most explicit and cache-friendly.","Easy"],
+    ["What is HATEOAS?","Hypermedia As The Engine Of Application State — responses include links to related actions/resources so clients can navigate the API dynamically rather than hardcoding URLs.","Hard"],
+    ["How do you handle pagination in REST APIs?","Offset-based (limit/offset) is simple but can skip/duplicate on changing data; cursor-based pagination using an opaque token is more stable for large, frequently-changing datasets.","Medium"]
+  ];
+  restQ.forEach(function(r){ add("REST API", r[0], r[1], r[2]); });
+
+  var authQ = [
+    ["Explain how JWT authentication works.","The server issues a signed token containing claims after login; the client sends it in the Authorization header on subsequent requests, and the server verifies the signature without needing a session store.","Medium"],
+    ["What is the difference between authentication and authorization?","Authentication verifies who a user is (identity), while authorization determines what actions or resources that authenticated user is permitted to access.","Easy"],
+    ["How does OAuth 2.0 authorization code flow work?","The client redirects to an auth server, the user consents, an authorization code is returned, and the client exchanges it server-side for an access token, keeping tokens off the browser.","Hard"],
+    ["How would you implement refresh token rotation securely?","Issue short-lived access tokens with longer-lived refresh tokens stored securely (httpOnly cookies), rotating refresh tokens on each use and revoking old ones to limit replay risk.","Hard"]
+  ];
+  authQ.forEach(function(r){ add("Authentication", r[0], r[1], r[2]); });
+
+  var microQ = [
+    ["What are the trade-offs of microservices vs a monolith?","Microservices offer independent scaling/deployment and technology flexibility but add operational complexity, network latency, and distributed data consistency challenges compared to a simpler monolith.","Medium"],
+    ["How do microservices communicate with each other?","Synchronously via REST/gRPC calls or asynchronously via message brokers like Kafka/RabbitMQ, with async preferred for decoupling and resilience.","Medium"],
+    ["What is the Saga pattern?","A way to manage distributed transactions across microservices using a sequence of local transactions with compensating actions if a later step fails, avoiding distributed locks.","Hard"]
+  ];
+  microQ.forEach(function(r){ add("Microservices", r[0], r[1], r[2]); });
+
+  var cacheQ = [
+    ["What is cache-aside pattern?","The application checks the cache first; on a miss it reads from the database, populates the cache, then returns the data, keeping the cache and DB loosely coupled.","Easy"],
+    ["What is the difference between LRU and LFU eviction policies?","LRU evicts the least recently accessed item, while LFU evicts the least frequently accessed item, suited to different access pattern assumptions.","Medium"]
+  ];
+  cacheQ.forEach(function(r){ add("Caching", r[0], r[1], r[2]); });
+
+  var dpQ = [
+    ["What is the Repository pattern and why use it?","It abstracts data access logic behind an interface, decoupling business logic from the specific database/ORM implementation and improving testability.","Medium"],
+    ["Explain the Singleton pattern and a backend use case.","Ensures only one instance of a class exists globally, commonly used for shared resources like a database connection pool or configuration object.","Easy"],
+    ["What is the Factory pattern?","A creational pattern that encapsulates object creation logic, letting callers request an object without knowing the concrete class being instantiated.","Easy"]
+  ];
+  dpQ.forEach(function(r){ add("Design Patterns", r[0], r[1], r[2]); });
+
+  var behQ = [
+    ["Tell me about a time you disagreed with a teammate.","Use the STAR format: describe the Situation, your Task, the Action you took to resolve it constructively, and the positive Result for the team.","Easy"],
+    ["Describe a challenging bug you fixed.","Walk through how you reproduced it, your debugging process, the root cause, the fix, and what you changed afterward to prevent recurrence.","Easy"],
+    ["Why do you want to work here?","Research the company's product, engineering culture, and recent news; connect specific reasons to your own growth goals and skills.","Easy"],
+    ["Tell me about a time you missed a deadline.","Be honest about what happened, focus on what you learned about estimation or communication, and how you've since improved your process.","Medium"],
+    ["How do you handle receiving critical feedback?","Explain that you view feedback as a growth tool, give a concrete example of feedback you acted on, and describe the resulting improvement.","Easy"]
+  ];
+  behQ.forEach(function(r){ add("Behavioral", r[0], r[1], r[2]); });
+
+  var hrQ = [
+    ["What are your salary expectations?","Research market rate for the role/location beforehand, give a well-reasoned range rather than a single number, and note you're open to discussing the full package.","Easy"],
+    ["Where do you see yourself in 5 years?","Focus on growth in technical depth or leadership relevant to the role, showing ambition that aligns with the company's trajectory.","Easy"],
+    ["Why are you leaving your current job?","Keep it positive and forward-looking — focus on seeking growth, new challenges, or better alignment with your goals rather than criticizing your employer.","Easy"],
+    ["Do you have any questions for us?","Always have 2-3 thoughtful questions ready about team structure, engineering practices, or growth opportunities to show genuine engagement.","Easy"]
+  ];
+  hrQ.forEach(function(r){ add("HR", r[0], r[1], r[2]); });
+
+  return bank;
+}
+
+/* ============================================================
+   APPLICATION STATE
+============================================================ */
+function defaultState(){
+  var study = {};
+  STUDY_TOPICS.forEach(function(group){
+    group.items.forEach(function(topic){
+      study[topic] = {done:false, hours:0, category:group.cat};
+    });
+  });
+
+  var dsa = {};
+  DSA_CATEGORIES.forEach(function(cat){
+    dsa[cat] = {easy:0, medium:0, hard:0, solved:0, attempted:0};
+  });
+
+  var systemDesign = SYSTEM_DESIGN_PROBLEMS.map(function(p){
+    return {id:Utils.uid("sd"), name:p.name, difficulty:p.difficulty, progress:0, notes:""};
+  });
+
+  return {
+    version: window.APP_VERSION,
+    theme: "light",
+    accent: "#6366f1",
+    meta: { startDate: Utils.todayISO() },
+    applications: [],
+    companies: [],
+    recruiters: [],
+    interviews: [],
+    resumes: [],
+    study: study,
+    dsa: dsa,
+    systemDesign: systemDesign,
+    questions: buildQuestionBank(),
+    notes: [],
+    roadmap: buildRoadmap(),
+    planner: {},
+    dailyLogs: {},
+    achievementsUnlocked: [],
+    pomodoro: { sessions: 0, focusMinutes: 0, log: [] },
+    settings: { weekStart: "mon" }
+  };
+}
+
+function mergeState(defaults, saved){
+  if(!saved) return defaults;
+  var merged = Object.assign({}, defaults, saved);
+  // Deep-merge sub objects that may have grown new default keys over time
+  merged.study = Object.assign({}, defaults.study, saved.study || {});
+  merged.dsa = Object.assign({}, defaults.dsa, saved.dsa || {});
+  merged.meta = Object.assign({}, defaults.meta, saved.meta || {});
+  merged.pomodoro = Object.assign({}, defaults.pomodoro, saved.pomodoro || {});
+  merged.settings = Object.assign({}, defaults.settings, saved.settings || {});
+  merged.systemDesign = (saved.systemDesign && saved.systemDesign.length) ? saved.systemDesign : defaults.systemDesign;
+  merged.roadmap = (saved.roadmap && saved.roadmap.length===30) ? saved.roadmap : defaults.roadmap;
+  merged.questions = (saved.questions && saved.questions.length) ? saved.questions : defaults.questions;
+  merged.applications = saved.applications || [];
+  merged.companies = saved.companies || [];
+  merged.recruiters = saved.recruiters || [];
+  merged.interviews = saved.interviews || [];
+  merged.resumes = saved.resumes || [];
+  merged.notes = saved.notes || [];
+  merged.planner = saved.planner || {};
+  merged.dailyLogs = saved.dailyLogs || {};
+  merged.achievementsUnlocked = saved.achievementsUnlocked || [];
+  return merged;
+}
+
+const App = {
+  state: mergeState(defaultState(), Store.load()),
+  currentView: "dashboard",
+  persist: Utils.debounce(function(){ Store.save(App.state); }, 250),
+  save(){ this.persist(); },
+  saveNow(){ Store.save(this.state); }
+};
+
+function currentDayNumber(){
+  var n = Utils.daysBetween(App.state.meta.startDate, Utils.todayISO()) + 1;
+  return Utils.clamp(n, 1, 30);
+}
+function daysLeft(){ return Utils.clamp(30 - currentDayNumber() + 1, 0, 30); }
+
+function logToday(patch){
+  var d = Utils.todayISO();
+  if(!App.state.dailyLogs[d]) App.state.dailyLogs[d] = {applications:0, studyHours:0};
+  Object.keys(patch).forEach(function(k){ App.state.dailyLogs[d][k] = (App.state.dailyLogs[d][k]||0) + patch[k]; });
+}
+
+function checkAchievements(){
+  var newly = [];
+  ACHIEVEMENT_DEFS.forEach(function(a){
+    var already = App.state.achievementsUnlocked.indexOf(a.id) > -1;
+    if(!already && a.check(App.state)){
+      App.state.achievementsUnlocked.push(a.id);
+      newly.push(a);
+    }
+  });
+  if(newly.length){
+    App.save();
+    newly.forEach(function(a){
+      Toast.show("Achievement unlocked: " + a.label, "success", a.icon);
+    });
+    Confetti.fire();
+    if(App.currentView === "achievements") renderView();
+  }
+  return newly;
+}
+
+/* ============================================================
+   NAVIGATION CONFIG
+============================================================ */
+const NAV_SECTIONS = [
+  { label: "Overview", items: [
+    {id:"dashboard", icon:"🏠", label:"Dashboard"},
+    {id:"roadmap", icon:"🗺️", label:"30 Day Roadmap"},
+    {id:"planner", icon:"📆", label:"Daily Planner"}
+  ]},
+  { label: "Job Search", items: [
+    {id:"applications", icon:"📋", label:"Applications"},
+    {id:"recruiters", icon:"🤝", label:"Recruiters"},
+    {id:"companies", icon:"🏢", label:"Companies CRM"},
+    {id:"interviews", icon:"🎙️", label:"Interviews"},
+    {id:"resumes", icon:"📄", label:"Resume Manager"}
+  ]},
+  { label: "Preparation", items: [
+    {id:"study", icon:"📘", label:"Study Tracker"},
+    {id:"dsa", icon:"🧩", label:"DSA Tracker"},
+    {id:"systemdesign", icon:"🏗️", label:"System Design"},
+    {id:"questions", icon:"❓", label:"Interview Questions"},
+    {id:"notes", icon:"📝", label:"Notes"}
+  ]},
+  { label: "Growth", items: [
+    {id:"achievements", icon:"🏆", label:"Achievements"},
+    {id:"analytics", icon:"📊", label:"Analytics"},
+    {id:"pomodoro", icon:"⏱️", label:"Pomodoro"},
+    {id:"settings", icon:"⚙️", label:"Settings"}
+  ]}
+];
+const NAV_TITLES = {};
+NAV_SECTIONS.forEach(function(sec){ sec.items.forEach(function(it){ NAV_TITLES[it.id] = it.label; }); });
+
+function navBadge(id){
+  var s = App.state;
+  if(id==="applications") return s.applications.length || null;
+  if(id==="interviews") return s.interviews.length || null;
+  if(id==="notes") return s.notes.length || null;
+  if(id==="companies") return s.companies.length || null;
+  if(id==="recruiters") return s.recruiters.length || null;
+  return null;
+}
+
+function renderSidebar(){
+  var html = '';
+  html += '<div class="sidebar-brand">';
+  html += '  <div class="brand-logo">🚀</div>';
+  html += '  <div class="brand-text"><div class="brand-title">Job Accelerator</div><div class="brand-sub">Road to a Backend Offer</div></div>';
+  html += '</div>';
+  html += '<div class="sidebar-search" id="cmdOpen"><span>🔍</span><input id="globalSearch" placeholder="Search everything..." readonly><span class="kbd">⌘K</span></div>';
+  html += '<nav class="sidebar-nav">';
+  NAV_SECTIONS.forEach(function(sec){
+    html += '<div class="nav-section-label">' + sec.label + '</div>';
+    sec.items.forEach(function(it){
+      var active = App.currentView === it.id ? ' active' : '';
+      var badge = navBadge(it.id);
+      html += '<div class="nav-item' + active + '" data-nav="' + it.id + '">';
+      html += '<span class="nav-icon">' + it.icon + '</span><span>' + it.label + '</span>';
+      if(badge) html += '<span class="nav-badge">' + badge + '</span>';
+      html += '</div>';
+    });
+  });
+  html += '</nav>';
+  var streak = computeStreak(App.state);
+  html += '<div class="sidebar-footer">';
+  html += '<div class="streak-pill">🔥 <span>' + streak + ' day streak</span></div>';
+  html += '<button class="icon-btn" id="themeToggleBtn" title="Toggle theme">' + (App.state.theme==="dark" ? "☀️" : "🌙") + '</button>';
+  html += '</div>';
+  document.getElementById("sidebar").innerHTML = html;
+
+  document.querySelectorAll("[data-nav]").forEach(function(el){
+    el.addEventListener("click", function(){
+      navigateTo(el.getAttribute("data-nav"));
+      document.getElementById("sidebar").classList.remove("open");
+    });
+  });
+  document.getElementById("themeToggleBtn").addEventListener("click", toggleTheme);
+  document.getElementById("cmdOpen").addEventListener("click", openCommandPalette);
+}
+
+function renderHeader(){
+  var title = NAV_TITLES[App.currentView] || "Dashboard";
+  var subMap = {
+    dashboard: "Your mission control for the next 30 days",
+    roadmap: "Day-by-day plan to interview-ready",
+    planner: "Plan your day in four focused blocks",
+    applications: "Track every job application in one place",
+    recruiters: "Manage recruiter conversations",
+    companies: "Your target company pipeline",
+    interviews: "Every round, every outcome, tracked",
+    resumes: "Manage tailored resume versions",
+    study: "Backend & infra topics mastery tracker",
+    dsa: "Data structures & algorithms practice log",
+    systemdesign: "High-level system design practice",
+    questions: "200+ curated interview questions",
+    notes: "Quick notes, autosaved",
+    achievements: "Badges and milestones you've earned",
+    analytics: "Your job search, visualized",
+    pomodoro: "Focused work sessions",
+    settings: "Preferences & data management"
+  };
+  var html = '';
+  html += '<button id="menuToggle" class="icon-btn">☰</button>';
+  html += '<div><div class="header-title">' + title + '</div><div class="header-sub">' + (subMap[App.currentView]||"") + '</div></div>';
+  html += '<div class="header-spacer"></div>';
+  html += '<div class="header-actions">';
+  html += '<button class="icon-btn" id="headerBackup" title="Quick backup">💾</button>';
+  html += '<button class="btn btn-primary" id="headerQuickAdd">+ Quick Add</button>';
+  html += '</div>';
+  document.getElementById("header").innerHTML = html;
+  document.getElementById("menuToggle").addEventListener("click", function(){ document.getElementById("sidebar").classList.toggle("open"); });
+  document.getElementById("headerBackup").addEventListener("click", backupJSON);
+  document.getElementById("headerQuickAdd").addEventListener("click", quickAddForCurrentView);
+}
+
+function toggleTheme(){
+  App.state.theme = App.state.theme === "dark" ? "light" : "dark";
+  applyTheme();
+  App.save();
+}
+function applyTheme(){
+  document.body.setAttribute("data-theme", App.state.theme);
+  document.documentElement.style.setProperty("--accent", App.state.accent);
+  var rgb = hexToRgb(App.state.accent);
+  document.documentElement.style.setProperty("--accent-rgb", rgb.r+","+rgb.g+","+rgb.b);
+}
+function hexToRgb(hex){
+  hex = hex.replace("#","");
+  if(hex.length===3) hex = hex.split("").map(function(c){return c+c;}).join("");
+  var num = parseInt(hex,16);
+  return {r:(num>>16)&255, g:(num>>8)&255, b:num&255};
+}
+
+/* ROUTER */
+function navigateTo(viewId){
+  App.currentView = viewId;
+  renderSidebar();
+  renderHeader();
+  renderView();
+}
+function renderView(){
+  var vp = document.getElementById("viewport");
+  var fn = VIEW_RENDERERS[App.currentView];
+  vp.innerHTML = fn ? fn() : '<div class="empty-state">View not found</div>';
+  if(VIEW_POST_RENDER[App.currentView]) VIEW_POST_RENDER[App.currentView]();
+  vp.scrollTop = 0;
+}
+const VIEW_RENDERERS = {};
+const VIEW_POST_RENDER = {};
+
+/* MODAL HELPER */
+function openModal(title, bodyHtml, footButtons){
+  var root = document.getElementById("modalRoot");
+  var overlay = document.createElement("div");
+  overlay.className = "modal-overlay active";
+  overlay.id = "activeModal";
+  var footHtml = (footButtons||[]).map(function(b,i){
+    return '<button class="btn ' + (b.primary?'btn-primary':'') + '" data-modal-btn="' + i + '">' + b.label + '</button>';
+  }).join("");
+  overlay.innerHTML =
+    '<div class="modal">' +
+      '<div class="modal-head"><h3>' + title + '</h3><button class="icon-btn" id="modalCloseX">✕</button></div>' +
+      '<div class="modal-body">' + bodyHtml + '</div>' +
+      (footButtons ? '<div class="modal-foot">' + footHtml + '</div>' : '') +
+    '</div>';
+  root.innerHTML = "";
+  root.appendChild(overlay);
+  document.getElementById("modalCloseX").addEventListener("click", closeModal);
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) closeModal(); });
+  (footButtons||[]).forEach(function(b,i){
+    var btn = overlay.querySelector('[data-modal-btn="'+i+'"]');
+    if(btn) btn.addEventListener("click", b.onClick);
+  });
+  return overlay;
+}
+function closeModal(){
+  var m = document.getElementById("activeModal");
+  if(m) m.remove();
+}
+
+function quickAddForCurrentView(){
+  var map = {
+    applications: openApplicationModal,
+    companies: openCompanyModal,
+    recruiters: openRecruiterModal,
+    interviews: openInterviewModal,
+    resumes: openResumeModal,
+    notes: function(){ createQuickNote(); },
+    questions: openQuestionModal
+  };
+  var fn = map[App.currentView];
+  if(fn) fn();
+  else openApplicationModal();
+}
+
+/* ============================================================
+   DASHBOARD VIEW
+============================================================ */
+function weekRange(){
+  var d = new Date();
+  var day = d.getDay();
+  var diffToMonday = (day===0?-6:1-day);
+  var monday = new Date(d); monday.setDate(d.getDate()+diffToMonday);
+  var dates = [];
+  for(var i=0;i<7;i++){ var x=new Date(monday); x.setDate(monday.getDate()+i); dates.push(x.toISOString().slice(0,10)); }
+  return dates;
+}
+function appsInRange(dates){
+  var s = App.state;
+  return s.applications.filter(function(a){ return dates.indexOf(a.appliedDate) > -1; }).length;
+}
+function studyHoursTotal(){
+  var s = App.state, total = 0;
+  Object.keys(s.study).forEach(function(k){ total += (s.study[k].hours||0); });
+  return total;
+}
+function studyProgressPct(){
+  var s = App.state, keys = Object.keys(s.study);
+  var done = keys.filter(function(k){ return s.study[k].done; }).length;
+  return keys.length ? Math.round(done/keys.length*100) : 0;
+}
+function overallGoalPct(){
+  var roadmapPct = App.state.roadmap.reduce(function(a,d){return a+d.completion;},0) / (30*100) * 100;
+  var studyPct = studyProgressPct();
+  var dsaPct = Math.min(100, totalDSASolved(App.state) / 150 * 100);
+  var appPct = Math.min(100, App.state.applications.length / 100 * 100);
+  return Math.round((roadmapPct*0.35 + studyPct*0.25 + dsaPct*0.2 + appPct*0.2));
+}
+
+function circularProgress(pct, size, label, sub){
+  size = size || 84;
+  var r = size/2 - 7, c = 2*Math.PI*r;
+  var offset = c - (Utils.clamp(pct,0,100)/100)*c;
+  return '' +
+  '<div style="position:relative;width:'+size+'px;height:'+size+'px;">' +
+    '<svg width="'+size+'" height="'+size+'" style="transform:rotate(-90deg);">' +
+      '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke="var(--bg-hover)" stroke-width="7" fill="none"/>' +
+      '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke="url(#gradA)" stroke-width="7" fill="none" ' +
+        'stroke-dasharray="'+c+'" stroke-dashoffset="'+c+'" style="transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);" data-target-offset="'+offset+'" class="circ-anim"/>' +
+      '<defs><linearGradient id="gradA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent-2)"/></linearGradient></defs>' +
+    '</svg>' +
+    '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">' +
+      '<div style="font-size:16px;font-weight:800;">'+Math.round(pct)+'%</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function kpiCard(icon, label, value, trend, extra){
+  return '' +
+  '<div class="card kpi-card">' +
+    '<div class="kpi-top"><div class="kpi-icon">'+icon+'</div>' + (trend ? '<div class="kpi-trend '+(trend.up?"trend-up":"trend-down")+'">'+(trend.up?"▲":"▼")+' '+trend.text+'</div>' : '') + '</div>' +
+    '<div class="kpi-value" data-count-target="'+value+'">0</div>' +
+    '<div class="kpi-label">'+label+'</div>' +
+    (extra||'') +
+  '</div>';
+}
+
+VIEW_RENDERERS.dashboard = function(){
+  var s = App.state;
+  var day = currentDayNumber();
+  var left = daysLeft();
+  var week = weekRange();
+  var todayISO = Utils.todayISO();
+  var appsToday = s.applications.filter(function(a){return a.appliedDate===todayISO;}).length;
+  var appsWeek = appsInRange(week);
+  var interviewsScheduled = s.interviews.length;
+  var interviewsCleared = s.interviews.filter(function(i){return i.result==="Passed";}).length;
+  var offers = s.applications.filter(function(a){return a.status==="Offer"||a.status==="Accepted";}).length;
+  var streak = computeStreak(s);
+  var studyHrs = studyHoursTotal();
+
+  var html = '';
+  html += '<div class="page-head"><div><h1>Welcome back 👋</h1><p>Day '+day+' of 30 · '+left+' days remaining to your goal</p></div>' +
+           '<div class="chip">🎯 Overall Goal: '+overallGoalPct()+'%</div></div>';
+
+  html += '<div class="grid grid-4 mb-8">';
+  html += kpiCard("📅","Current Day", day);
+  html += kpiCard("⏳","Days Left", left);
+  html += kpiCard("📨","Applications Today", appsToday);
+  html += kpiCard("📈","Applications This Week", appsWeek);
+  html += '</div>';
+
+  html += '<div class="grid grid-4 mb-8">';
+  html += kpiCard("📋","Applications Total", s.applications.length);
+  html += kpiCard("🎙️","Interviews Scheduled", interviewsScheduled);
+  html += kpiCard("✅","Interviews Cleared", interviewsCleared);
+  html += kpiCard("🏆","Offers Received", offers);
+  html += '</div>';
+
+  html += '<div class="grid grid-3 mb-8">';
+  html += '<div class="card"><div class="kpi-top"><div class="kpi-icon">🔥</div></div><div class="kpi-value" data-count-target="'+streak+'">0</div><div class="kpi-label">Current Streak (days)</div></div>';
+  html += '<div class="card"><div class="kpi-top"><div class="kpi-icon">📚</div></div><div class="kpi-value" data-count-target="'+studyHrs+'">0</div><div class="kpi-label">Total Study Hours</div></div>';
+  html += '<div class="card flex-between"><div><div class="kpi-label mb-8">Learning Progress</div><div style="font-size:13px;font-weight:700;">'+studyProgressPct()+'% topics complete</div></div>'+circularProgress(studyProgressPct(),72)+'</div>';
+  html += '</div>';
+
+  html += '<div class="grid grid-2">';
+  html += '<div class="card">';
+  html += '<div class="section-title">🗺️ Roadmap Progress <span class="tag">Day '+day+'/30</span></div>';
+  html += '<div class="progress-track mb-8"><div class="progress-fill" style="width:'+Math.round(day/30*100)+'%"></div></div>';
+  var recentDays = s.roadmap.slice(Math.max(0,day-4), day);
+  recentDays.forEach(function(d){
+    html += '<div class="flex-between mt-8" style="font-size:12.5px;">' +
+      '<span>Day '+d.day+' · '+d.theme+'</span>' +
+      statusBadge(d.status) +
+      '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="card" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;">';
+  html += '<div class="section-title" style="width:100%;">🎯 Overall Goal</div>';
+  html += circularProgress(overallGoalPct(), 130);
+  html += '<div class="text-muted" style="font-size:12.5px;text-align:center;">Weighted across roadmap, study, DSA & applications</div>';
+  html += '</div>';
+  html += '</div>';
+
+  return html;
+};
+
+function statusBadge(status){
+  var map = {
+    "pending": ["badge-gray","Pending"],
+    "in-progress": ["badge-blue","In Progress"],
+    "completed": ["badge-green","Completed"],
+    "locked": ["badge-gray","Locked"]
+  };
+  var m = map[status] || map.pending;
+  return '<span class="badge '+m[0]+'">'+m[1]+'</span>';
+}
+
+VIEW_POST_RENDER.dashboard = function(){
+  animateCounters();
+  animateCircles();
+};
+
+function animateCounters(){
+  document.querySelectorAll("[data-count-target]").forEach(function(el){
+    var target = parseFloat(el.getAttribute("data-count-target"));
+    var isFloat = target % 1 !== 0;
+    var start = 0, duration = 800, startTime = null;
+    function step(ts){
+      if(!startTime) startTime = ts;
+      var progress = Math.min((ts-startTime)/duration, 1);
+      var eased = 1 - Math.pow(1-progress, 3);
+      var val = start + (target-start)*eased;
+      el.textContent = isFloat ? val.toFixed(1) : Math.round(val);
+      if(progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+function animateCircles(){
+  requestAnimationFrame(function(){
+    document.querySelectorAll(".circ-anim").forEach(function(c){
+      var target = c.getAttribute("data-target-offset");
+      requestAnimationFrame(function(){ c.style.strokeDashoffset = target; });
+    });
+  });
+}
+
+/* ============================================================
+   APPLICATIONS CRM
+============================================================ */
+const APPLICATION_STATUSES = ["Wishlist","Applied","Online Assessment","Assignment","Technical Round 1","Technical Round 2","Manager Round","HR Round","Offer","Rejected","Accepted"];
+const STATUS_BADGE_CLASS = {
+  "Wishlist":"badge-gray","Applied":"badge-blue","Online Assessment":"badge-purple","Assignment":"badge-purple",
+  "Technical Round 1":"badge-yellow","Technical Round 2":"badge-yellow","Manager Round":"badge-yellow","HR Round":"badge-yellow",
+  "Offer":"badge-green","Rejected":"badge-red","Accepted":"badge-green"
+};
+let appFilters = { search:"", status:"", sort:"dateDesc" };
+
+VIEW_RENDERERS.applications = function(){
+  var s = App.state;
+  var rows = s.applications.slice();
+
+  if(appFilters.search){
+    var q = appFilters.search.toLowerCase();
+    rows = rows.filter(function(a){
+      return (a.company||"").toLowerCase().indexOf(q)>-1 || (a.role||"").toLowerCase().indexOf(q)>-1 || (a.location||"").toLowerCase().indexOf(q)>-1;
+    });
+  }
+  if(appFilters.status) rows = rows.filter(function(a){ return a.status === appFilters.status; });
+  rows.sort(function(a,b){
+    if(appFilters.sort==="dateDesc") return (b.appliedDate||"").localeCompare(a.appliedDate||"");
+    if(appFilters.sort==="dateAsc") return (a.appliedDate||"").localeCompare(b.appliedDate||"");
+    if(appFilters.sort==="company") return (a.company||"").localeCompare(b.company||"");
+    return 0;
+  });
+
+  var html = '';
+  html += '<div class="page-head"><div><h1>Job Applications</h1><p>'+s.applications.length+' total applications tracked</p></div>' +
+          '<button class="btn btn-primary" id="addAppBtn">+ Add Application</button></div>';
+
+  html += '<div class="toolbar">';
+  html += '<input type="search" id="appSearch" placeholder="Search company, role, location..." value="'+Utils.escapeHtml(appFilters.search)+'">';
+  html += '<select id="appStatusFilter"><option value="">All Statuses</option>' + APPLICATION_STATUSES.map(function(st){ return '<option value="'+st+'"'+(appFilters.status===st?' selected':'')+'>'+st+'</option>'; }).join("") + '</select>';
+  html += '<select id="appSort"><option value="dateDesc"'+(appFilters.sort==="dateDesc"?' selected':'')+'>Newest First</option><option value="dateAsc"'+(appFilters.sort==="dateAsc"?' selected':'')+'>Oldest First</option><option value="company"'+(appFilters.sort==="company"?' selected':'')+'>Company A-Z</option></select>';
+  html += '<div style="flex:1"></div>';
+  html += '<button class="btn btn-sm" id="exportAppsBtn">⬇ Export CSV</button>';
+  html += '<button class="btn btn-sm" id="importAppsBtn">⬆ Import CSV</button>';
+  html += '<input type="file" id="importAppsFile" accept=".csv" class="hidden">';
+  html += '</div>';
+
+  if(!rows.length){
+    html += '<div class="card"><div class="empty-state"><div class="em-icon">📋</div><div>No applications match your filters yet.</div></div></div>';
+  } else {
+    html += '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Company</th><th>Role</th><th>Location</th><th>Salary</th><th>Source</th><th>Applied</th><th>Recruiter</th><th>Status</th><th>Priority</th><th>Next Follow-up</th><th>Resume</th><th></th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function(a){
+      html += '<tr>' +
+        '<td><strong>'+Utils.escapeHtml(a.company)+'</strong></td>' +
+        '<td>'+Utils.escapeHtml(a.role)+'</td>' +
+        '<td>'+Utils.escapeHtml(a.location)+'</td>' +
+        '<td>'+Utils.escapeHtml(a.salary)+'</td>' +
+        '<td>'+Utils.escapeHtml(a.source)+'</td>' +
+        '<td>'+Utils.fmtDate(a.appliedDate)+'</td>' +
+        '<td>'+Utils.escapeHtml(a.recruiter)+'</td>' +
+        '<td><span class="badge '+(STATUS_BADGE_CLASS[a.status]||"badge-gray")+'">'+a.status+'</span></td>' +
+        '<td>'+priorityBadge(a.priority)+'</td>' +
+        '<td>'+Utils.fmtDate(a.followUpDate)+'</td>' +
+        '<td>'+Utils.escapeHtml(a.resumeVersion||"—")+'</td>' +
+        '<td><button class="btn btn-sm" data-edit-app="'+a.id+'">✎</button> <button class="btn btn-sm btn-danger" data-del-app="'+a.id+'">🗑</button></td>' +
+        '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+  return html;
+};
+
+function priorityBadge(p){
+  var cls = p==="High"?"badge-red":p==="Medium"?"badge-yellow":"badge-gray";
+  return '<span class="badge '+cls+'">'+(p||"Low")+'</span>';
+}
+
+VIEW_POST_RENDER.applications = function(){
+  document.getElementById("addAppBtn").addEventListener("click", function(){ openApplicationModal(); });
+  document.getElementById("appSearch").addEventListener("input", Utils.debounce(function(e){ appFilters.search = e.target.value; renderView(); }, 250));
+  document.getElementById("appStatusFilter").addEventListener("change", function(e){ appFilters.status = e.target.value; renderView(); });
+  document.getElementById("appSort").addEventListener("change", function(e){ appFilters.sort = e.target.value; renderView(); });
+  document.getElementById("exportAppsBtn").addEventListener("click", exportApplicationsCSV);
+  document.getElementById("importAppsBtn").addEventListener("click", function(){ document.getElementById("importAppsFile").click(); });
+  document.getElementById("importAppsFile").addEventListener("change", importApplicationsCSV);
+  document.querySelectorAll("[data-edit-app]").forEach(function(btn){
+    btn.addEventListener("click", function(){ openApplicationModal(btn.getAttribute("data-edit-app")); });
+  });
+  document.querySelectorAll("[data-del-app]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var id = btn.getAttribute("data-del-app");
+      App.state.applications = App.state.applications.filter(function(a){return a.id!==id;});
+      App.save(); renderView(); renderSidebar();
+      Toast.show("Application removed", "info");
+    });
+  });
+};
+
+function openApplicationModal(editId){
+  var s = App.state;
+  var existing = editId ? s.applications.find(function(a){return a.id===editId;}) : null;
+  var a = existing || {company:"",role:"",location:"",salary:"",source:"",appliedDate:Utils.todayISO(),recruiter:"",status:"Applied",priority:"Medium",interviewDate:"",followUpDate:"",resumeVersion:"",jobUrl:"",notes:""};
+
+  var body = '' +
+    '<div class="form-row">' +
+      field("Company","mCompany",a.company) +
+      field("Role","mRole",a.role) +
+    '</div>' +
+    '<div class="form-row">' +
+      field("Location","mLocation",a.location) +
+      field("Salary","mSalary",a.salary) +
+    '</div>' +
+    '<div class="form-row">' +
+      field("Source","mSource",a.source,"e.g. LinkedIn, Referral") +
+      field("Recruiter","mRecruiter",a.recruiter) +
+    '</div>' +
+    '<div class="form-row">' +
+      field("Applied Date","mAppliedDate",a.appliedDate,null,"date") +
+      field("Follow-up Date","mFollowUpDate",a.followUpDate,null,"date") +
+    '</div>' +
+    '<div class="form-row">' +
+      selectField("Status","mStatus",APPLICATION_STATUSES,a.status) +
+      selectField("Priority","mPriority",["High","Medium","Low"],a.priority) +
+    '</div>' +
+    '<div class="form-row">' +
+      field("Interview Date","mInterviewDate",a.interviewDate,null,"date") +
+      field("Resume Version Used","mResumeVersion",a.resumeVersion) +
+    '</div>' +
+    field("Job URL","mJobUrl",a.jobUrl) +
+    '<div class="field"><label>Notes</label><textarea id="mNotes">'+Utils.escapeHtml(a.notes)+'</textarea></div>';
+
+  openModal(existing ? "Edit Application" : "Add Application", body, [
+    {label:"Cancel", onClick: closeModal},
+    {label: existing ? "Save Changes" : "Add Application", primary:true, onClick: function(){
+      var data = {
+        company: val("mCompany"), role: val("mRole"), location: val("mLocation"), salary: val("mSalary"),
+        source: val("mSource"), recruiter: val("mRecruiter"), appliedDate: val("mAppliedDate"),
+        followUpDate: val("mFollowUpDate"), status: val("mStatus"), priority: val("mPriority"),
+        interviewDate: val("mInterviewDate"), resumeVersion: val("mResumeVersion"), jobUrl: val("mJobUrl"), notes: val("mNotes")
+      };
+      if(!data.company || !data.role){ Toast.show("Company and Role are required", "error"); return; }
+      if(existing){
+        Object.assign(existing, data);
+        Toast.show("Application updated", "success");
+      } else {
+        data.id = Utils.uid("app");
+        s.applications.push(data);
+        logToday({applications:1});
+        Toast.show("Application added", "success");
+      }
+      App.save();
+      checkAchievements();
+      closeModal();
+      renderView(); renderSidebar();
+    }}
+  ]);
+}
+
+function field(label, id, value, placeholder, type){
+  type = type || "text";
+  return '<div class="field"><label>'+label+'</label><input type="'+type+'" id="'+id+'" value="'+Utils.escapeHtml(value||"")+'" placeholder="'+(placeholder||"")+'"></div>';
+}
+function selectField(label, id, options, selected){
+  var opts = options.map(function(o){ return '<option value="'+o+'"'+(o===selected?' selected':'')+'>'+o+'</option>'; }).join("");
+  return '<div class="field"><label>'+label+'</label><select id="'+id+'">'+opts+'</select></div>';
+}
+function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ""; }
+
+function exportApplicationsCSV(){
+  var cols = [
+    {key:"company",label:"Company"},{key:"role",label:"Role"},{key:"location",label:"Location"},{key:"salary",label:"Salary"},
+    {key:"source",label:"Source"},{key:"appliedDate",label:"Applied Date"},{key:"recruiter",label:"Recruiter"},{key:"status",label:"Status"},
+    {key:"priority",label:"Priority"},{key:"interviewDate",label:"Interview Date"},{key:"followUpDate",label:"Follow-up Date"},
+    {key:"resumeVersion",label:"Resume Version"},{key:"jobUrl",label:"Job URL"},{key:"notes",label:"Notes"}
+  ];
+  var csv = Utils.toCSV(App.state.applications, cols);
+  Utils.download("applications.csv", csv, "text/csv");
+  Toast.show("Applications exported", "success");
+}
+function importApplicationsCSV(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      var rows = Utils.parseCSV(ev.target.result);
+      var header = rows.shift().map(function(h){return h.trim();});
+      var keyMap = {"Company":"company","Role":"role","Location":"location","Salary":"salary","Source":"source","Applied Date":"appliedDate","Recruiter":"recruiter","Status":"status","Priority":"priority","Interview Date":"interviewDate","Follow-up Date":"followUpDate","Resume Version":"resumeVersion","Job URL":"jobUrl","Notes":"notes"};
+      var added = 0;
+      rows.forEach(function(r){
+        if(r.length===1 && r[0]==="") return;
+        var obj = {id: Utils.uid("app"), status:"Applied", priority:"Medium"};
+        header.forEach(function(h,i){ if(keyMap[h]) obj[keyMap[h]] = r[i]; });
+        if(obj.company){ App.state.applications.push(obj); added++; }
+      });
+      App.save(); renderView(); renderSidebar();
+      Toast.show(added + " applications imported", "success");
+    }catch(err){ Toast.show("Import failed: invalid CSV", "error"); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+}
+
+/* ============================================================
+   COMPANY CRM
+============================================================ */
+VIEW_RENDERERS.companies = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>Company CRM</h1><p>'+s.companies.length+' target companies</p></div>' +
+    '<button class="btn btn-primary" id="addCompanyBtn">+ Add Company</button></div>';
+
+  if(!s.companies.length){
+    html += '<div class="card"><div class="empty-state"><div class="em-icon">🏢</div><div>No target companies yet. Add your dream companies to track outreach.</div></div></div>';
+    return html;
+  }
+
+  html += '<div class="grid grid-3">';
+  s.companies.forEach(function(c){
+    html += '<div class="card">' +
+      '<div class="flex-between mb-8"><strong style="font-size:14.5px;">'+Utils.escapeHtml(c.name)+'</strong>' +
+      '<span>'+(c.favorite?'⭐':'')+(c.dream?'🌟':'')+'</span></div>' +
+      '<div class="text-muted" style="font-size:12px;margin-bottom:10px;">'+Utils.escapeHtml(c.industry)+' · '+Utils.escapeHtml(c.location)+'</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">' +
+        (c.applied ? '<span class="badge badge-green">Applied</span>' : '<span class="badge badge-gray">Not Applied</span>') +
+        (c.interview ? '<span class="badge badge-blue">Interviewing</span>' : '') +
+        (c.referralNeeded ? '<span class="badge badge-yellow">Needs Referral</span>' : '') +
+        '<span class="badge '+(c.priority==="High"?"badge-red":c.priority==="Medium"?"badge-yellow":"badge-gray")+'">'+c.priority+' Priority</span>' +
+      '</div>' +
+      (c.notes ? '<div class="text-muted" style="font-size:12px;margin-bottom:10px;">'+Utils.escapeHtml(c.notes)+'</div>' : '') +
+      '<div style="display:flex;gap:8px;">' +
+        (c.careerPage ? '<a class="btn btn-sm" href="'+Utils.escapeHtml(c.careerPage)+'" target="_blank" rel="noopener">🔗 Careers</a>' : '') +
+        (c.linkedin ? '<a class="btn btn-sm" href="'+Utils.escapeHtml(c.linkedin)+'" target="_blank" rel="noopener">💼 LinkedIn</a>' : '') +
+        '<button class="btn btn-sm" data-edit-company="'+c.id+'">✎</button>' +
+        '<button class="btn btn-sm btn-danger" data-del-company="'+c.id+'">🗑</button>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.companies = function(){
+  document.getElementById("addCompanyBtn").addEventListener("click", function(){ openCompanyModal(); });
+  document.querySelectorAll("[data-edit-company]").forEach(function(btn){
+    btn.addEventListener("click", function(){ openCompanyModal(btn.getAttribute("data-edit-company")); });
+  });
+  document.querySelectorAll("[data-del-company]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      App.state.companies = App.state.companies.filter(function(c){return c.id!==btn.getAttribute("data-del-company");});
+      App.save(); renderView(); renderSidebar();
+    });
+  });
+};
+function openCompanyModal(editId){
+  var s = App.state;
+  var existing = editId ? s.companies.find(function(c){return c.id===editId;}) : null;
+  var c = existing || {name:"",industry:"",location:"",careerPage:"",linkedin:"",referralNeeded:false,recruiterContact:"",applied:false,interview:false,priority:"Medium",dream:false,favorite:false,notes:""};
+  var body = '' +
+    '<div class="form-row">'+field("Company Name","cName",c.name)+field("Industry","cIndustry",c.industry)+'</div>' +
+    '<div class="form-row">'+field("Location","cLocation",c.location)+field("Recruiter Contact","cRecruiterContact",c.recruiterContact)+'</div>' +
+    '<div class="form-row">'+field("Career Page URL","cCareerPage",c.careerPage)+field("LinkedIn URL","cLinkedin",c.linkedin)+'</div>' +
+    selectField("Priority","cPriority",["High","Medium","Low"],c.priority) +
+    '<div class="form-row">' +
+      checkboxField("cApplied","Already Applied",c.applied) +
+      checkboxField("cInterview","In Interview Process",c.interview) +
+    '</div>' +
+    '<div class="form-row">' +
+      checkboxField("cReferral","Referral Needed",c.referralNeeded) +
+      checkboxField("cDream","Dream Company",c.dream) +
+    '</div>' +
+    checkboxField("cFavorite","Favorite ⭐",c.favorite) +
+    '<div class="field"><label>Notes</label><textarea id="cNotes">'+Utils.escapeHtml(c.notes)+'</textarea></div>';
+  openModal(existing?"Edit Company":"Add Company", body, [
+    {label:"Cancel", onClick:closeModal},
+    {label: existing?"Save":"Add", primary:true, onClick:function(){
+      var data = {
+        name:val("cName"), industry:val("cIndustry"), location:val("cLocation"), careerPage:val("cCareerPage"),
+        linkedin:val("cLinkedin"), recruiterContact:val("cRecruiterContact"), priority:val("cPriority"),
+        applied:document.getElementById("cApplied").checked, interview:document.getElementById("cInterview").checked,
+        referralNeeded:document.getElementById("cReferral").checked, dream:document.getElementById("cDream").checked,
+        favorite:document.getElementById("cFavorite").checked, notes:val("cNotes")
+      };
+      if(!data.name){ Toast.show("Company name is required","error"); return; }
+      if(existing) Object.assign(existing,data);
+      else { data.id = Utils.uid("co"); s.companies.push(data); }
+      App.save(); checkAchievements(); closeModal(); renderView(); renderSidebar();
+      Toast.show("Company saved","success");
+    }}
+  ]);
+}
+function checkboxField(id,label,checked){
+  return '<div class="field"><label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="'+id+'" '+(checked?'checked':'')+' style="width:auto;"> '+label+'</label></div>';
+}
+
+/* ============================================================
+   RECRUITER TRACKER
+============================================================ */
+VIEW_RENDERERS.recruiters = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>Recruiter Tracker</h1><p>'+s.recruiters.length+' recruiter conversations</p></div>' +
+    '<button class="btn btn-primary" id="addRecruiterBtn">+ Add Recruiter</button></div>';
+  if(!s.recruiters.length){
+    html += '<div class="card"><div class="empty-state"><div class="em-icon">🤝</div><div>No recruiters tracked yet.</div></div></div>';
+    return html;
+  }
+  html += '<div class="table-wrap"><table><thead><tr><th>Name</th><th>Company</th><th>Connection</th><th>Message Sent</th><th>Response</th><th>Follow-up</th><th>Interview</th><th>Status</th><th></th></tr></thead><tbody>';
+  s.recruiters.forEach(function(r){
+    html += '<tr>' +
+      '<td><strong>'+Utils.escapeHtml(r.name)+'</strong></td>' +
+      '<td>'+Utils.escapeHtml(r.company)+'</td>' +
+      '<td>'+yesNo(r.connectionSent)+'</td>' +
+      '<td>'+yesNo(r.messageSent)+'</td>' +
+      '<td>'+yesNo(r.response)+'</td>' +
+      '<td>'+Utils.fmtDate(r.followUp)+'</td>' +
+      '<td>'+yesNo(r.interview)+'</td>' +
+      '<td><span class="badge badge-blue">'+Utils.escapeHtml(r.status||"Active")+'</span></td>' +
+      '<td><button class="btn btn-sm" data-edit-recruiter="'+r.id+'">✎</button> <button class="btn btn-sm btn-danger" data-del-recruiter="'+r.id+'">🗑</button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+};
+function yesNo(v){ return v ? '<span class="badge badge-green">Yes</span>' : '<span class="badge badge-gray">No</span>'; }
+VIEW_POST_RENDER.recruiters = function(){
+  document.getElementById("addRecruiterBtn").addEventListener("click", function(){ openRecruiterModal(); });
+  document.querySelectorAll("[data-edit-recruiter]").forEach(function(btn){ btn.addEventListener("click", function(){ openRecruiterModal(btn.getAttribute("data-edit-recruiter")); }); });
+  document.querySelectorAll("[data-del-recruiter]").forEach(function(btn){ btn.addEventListener("click", function(){
+    App.state.recruiters = App.state.recruiters.filter(function(r){return r.id!==btn.getAttribute("data-del-recruiter");});
+    App.save(); renderView(); renderSidebar();
+  }); });
+};
+function openRecruiterModal(editId){
+  var s = App.state;
+  var existing = editId ? s.recruiters.find(function(r){return r.id===editId;}) : null;
+  var r = existing || {name:"",company:"",linkedin:"",email:"",whatsapp:"",connectionSent:false,messageSent:false,response:false,followUp:"",interview:false,status:"Active"};
+  var body = '' +
+    '<div class="form-row">'+field("Name","rName",r.name)+field("Company","rCompany",r.company)+'</div>' +
+    '<div class="form-row">'+field("LinkedIn URL","rLinkedin",r.linkedin)+field("Email","rEmail",r.email)+'</div>' +
+    '<div class="form-row">'+field("WhatsApp","rWhatsapp",r.whatsapp)+field("Follow-up Date","rFollowUp",r.followUp,null,"date")+'</div>' +
+    '<div class="form-row">' + checkboxField("rConnectionSent","Connection Request Sent",r.connectionSent) + checkboxField("rMessageSent","Message Sent",r.messageSent) + '</div>' +
+    '<div class="form-row">' + checkboxField("rResponse","Got Response",r.response) + checkboxField("rInterview","Interview Set Up",r.interview) + '</div>' +
+    selectField("Status","rStatus",["Active","Warm","Cold","Closed"],r.status);
+  openModal(existing?"Edit Recruiter":"Add Recruiter", body, [
+    {label:"Cancel", onClick:closeModal},
+    {label:existing?"Save":"Add", primary:true, onClick:function(){
+      var data = {
+        name:val("rName"), company:val("rCompany"), linkedin:val("rLinkedin"), email:val("rEmail"), whatsapp:val("rWhatsapp"),
+        followUp:val("rFollowUp"), status:val("rStatus"),
+        connectionSent:document.getElementById("rConnectionSent").checked, messageSent:document.getElementById("rMessageSent").checked,
+        response:document.getElementById("rResponse").checked, interview:document.getElementById("rInterview").checked
+      };
+      if(!data.name){ Toast.show("Name is required","error"); return; }
+      if(existing) Object.assign(existing,data);
+      else { data.id = Utils.uid("rec"); s.recruiters.push(data); }
+      App.save(); closeModal(); renderView(); renderSidebar();
+      Toast.show("Recruiter saved","success");
+    }}
+  ]);
+}
+
+/* ============================================================
+   INTERVIEW TRACKER
+============================================================ */
+VIEW_RENDERERS.interviews = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>Interview Tracker</h1><p>'+s.interviews.length+' interview rounds logged</p></div>' +
+    '<button class="btn btn-primary" id="addInterviewBtn">+ Log Interview</button></div>';
+  if(!s.interviews.length){
+    html += '<div class="card"><div class="empty-state"><div class="em-icon">🎙️</div><div>No interviews logged yet.</div></div></div>';
+    return html;
+  }
+  var sorted = s.interviews.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
+  html += '<div class="table-wrap"><table><thead><tr><th>Company</th><th>Round</th><th>Date</th><th>Mode</th><th>Interviewer</th><th>Rating</th><th>Result</th><th>Notes</th><th></th></tr></thead><tbody>';
+  sorted.forEach(function(i){
+    html += '<tr>' +
+      '<td><strong>'+Utils.escapeHtml(i.company)+'</strong></td>' +
+      '<td>'+Utils.escapeHtml(i.round)+'</td>' +
+      '<td>'+Utils.fmtDate(i.date)+'</td>' +
+      '<td>'+Utils.escapeHtml(i.mode)+'</td>' +
+      '<td>'+Utils.escapeHtml(i.interviewer)+'</td>' +
+      '<td>'+"⭐".repeat(i.rating||0)+'</td>' +
+      '<td><span class="badge '+(i.result==="Passed"?"badge-green":i.result==="Failed"?"badge-red":"badge-gray")+'">'+(i.result||"Pending")+'</span></td>' +
+      '<td class="wrap">'+Utils.escapeHtml(i.learningNotes||"")+'</td>' +
+      '<td><button class="btn btn-sm" data-edit-interview="'+i.id+'">✎</button> <button class="btn btn-sm btn-danger" data-del-interview="'+i.id+'">🗑</button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+};
+VIEW_POST_RENDER.interviews = function(){
+  document.getElementById("addInterviewBtn").addEventListener("click", function(){ openInterviewModal(); });
+  document.querySelectorAll("[data-edit-interview]").forEach(function(btn){ btn.addEventListener("click", function(){ openInterviewModal(btn.getAttribute("data-edit-interview")); }); });
+  document.querySelectorAll("[data-del-interview]").forEach(function(btn){ btn.addEventListener("click", function(){
+    App.state.interviews = App.state.interviews.filter(function(i){return i.id!==btn.getAttribute("data-del-interview");});
+    App.save(); renderView(); renderSidebar();
+  }); });
+};
+function openInterviewModal(editId){
+  var s = App.state;
+  var existing = editId ? s.interviews.find(function(i){return i.id===editId;}) : null;
+  var i = existing || {company:"",round:"",date:Utils.todayISO(),mode:"Video",interviewer:"",feedback:"",mistakes:"",rating:3,result:"Pending",learningNotes:""};
+  var body = '' +
+    '<div class="form-row">'+field("Company","iCompany",i.company)+field("Round","iRound",i.round,"e.g. Technical Round 1")+'</div>' +
+    '<div class="form-row">'+field("Date","iDate",i.date,null,"date")+selectField("Mode","iMode",["Video","Phone","Onsite","Take-home"],i.mode)+'</div>' +
+    '<div class="form-row">'+field("Interviewer","iInterviewer",i.interviewer)+selectField("Result","iResult",["Pending","Passed","Failed"],i.result)+'</div>' +
+    selectField("Rating (1-5)","iRating",[1,2,3,4,5],i.rating) +
+    '<div class="field"><label>Feedback Received</label><textarea id="iFeedback">'+Utils.escapeHtml(i.feedback)+'</textarea></div>' +
+    '<div class="field"><label>Mistakes Made</label><textarea id="iMistakes">'+Utils.escapeHtml(i.mistakes)+'</textarea></div>' +
+    '<div class="field"><label>Learning Notes</label><textarea id="iLearningNotes">'+Utils.escapeHtml(i.learningNotes)+'</textarea></div>';
+  openModal(existing?"Edit Interview":"Log Interview", body, [
+    {label:"Cancel", onClick:closeModal},
+    {label:existing?"Save":"Log Interview", primary:true, onClick:function(){
+      var data = {
+        company:val("iCompany"), round:val("iRound"), date:val("iDate"), mode:val("iMode"), interviewer:val("iInterviewer"),
+        result:val("iResult"), rating:parseInt(val("iRating")||"3",10), feedback:val("iFeedback"), mistakes:val("iMistakes"), learningNotes:val("iLearningNotes")
+      };
+      if(!data.company||!data.round){ Toast.show("Company and Round are required","error"); return; }
+      if(existing) Object.assign(existing,data);
+      else { data.id = Utils.uid("iv"); s.interviews.push(data); }
+      App.save(); checkAchievements(); closeModal(); renderView(); renderSidebar();
+      Toast.show("Interview saved","success");
+    }}
+  ]);
+}
+
+/* ============================================================
+   RESUME MANAGER
+============================================================ */
+VIEW_RENDERERS.resumes = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>Resume Manager</h1><p>'+s.resumes.length+' resume versions stored</p></div>' +
+    '<button class="btn btn-primary" id="addResumeBtn">+ Add Resume Version</button></div>';
+  if(!s.resumes.length){
+    html += '<div class="card"><div class="empty-state"><div class="em-icon">📄</div><div>No resume versions yet. Track tailored versions like "Backend - Fintech" or "Node.js - Product Companies".</div></div></div>';
+    return html;
+  }
+  html += '<div class="grid grid-3">';
+  s.resumes.forEach(function(r){
+    html += '<div class="card">' +
+      '<div class="flex-between mb-8"><strong>'+Utils.escapeHtml(r.name)+'</strong><span class="badge badge-blue">ATS '+r.atsScore+'%</span></div>' +
+      '<div class="text-muted" style="font-size:12px;margin-bottom:8px;">Last updated '+Utils.fmtDate(r.lastUpdated)+'</div>' +
+      '<div class="progress-track mb-8"><div class="progress-fill" style="width:'+r.atsScore+'%"></div></div>' +
+      '<div style="display:flex;gap:14px;font-size:12px;" class="text-muted mb-8"><span>📤 '+r.downloads+' downloads</span><span>🏢 '+r.companiesUsed+' companies</span></div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<button class="btn btn-sm" data-edit-resume="'+r.id+'">✎ Edit</button>' +
+        '<button class="btn btn-sm" data-download-resume="'+r.id+'">⬇ Log Download</button>' +
+        '<button class="btn btn-sm btn-danger" data-del-resume="'+r.id+'">🗑</button>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.resumes = function(){
+  document.getElementById("addResumeBtn").addEventListener("click", function(){ openResumeModal(); });
+  document.querySelectorAll("[data-edit-resume]").forEach(function(btn){ btn.addEventListener("click", function(){ openResumeModal(btn.getAttribute("data-edit-resume")); }); });
+  document.querySelectorAll("[data-del-resume]").forEach(function(btn){ btn.addEventListener("click", function(){
+    App.state.resumes = App.state.resumes.filter(function(r){return r.id!==btn.getAttribute("data-del-resume");});
+    App.save(); renderView();
+  }); });
+  document.querySelectorAll("[data-download-resume]").forEach(function(btn){ btn.addEventListener("click", function(){
+    var r = App.state.resumes.find(function(x){return x.id===btn.getAttribute("data-download-resume");});
+    if(r){ r.downloads = (r.downloads||0)+1; App.save(); renderView(); }
+  }); });
+};
+function openResumeModal(editId){
+  var s = App.state;
+  var existing = editId ? s.resumes.find(function(r){return r.id===editId;}) : null;
+  var r = existing || {name:"",atsScore:70,lastUpdated:Utils.todayISO(),companiesUsed:0,downloads:0};
+  var body = '' +
+    field("Version Name","resName",r.name,"e.g. Backend - Node.js - Fintech") +
+    '<div class="form-row">'+field("ATS Score (%)","resAts",r.atsScore,null,"number")+field("Last Updated","resUpdated",r.lastUpdated,null,"date")+'</div>' +
+    field("Companies Used With","resCompanies",r.companiesUsed,null,"number");
+  openModal(existing?"Edit Resume Version":"Add Resume Version", body, [
+    {label:"Cancel", onClick:closeModal},
+    {label:existing?"Save":"Add", primary:true, onClick:function(){
+      var data = {name:val("resName"), atsScore:Utils.clamp(parseInt(val("resAts")||"70",10),0,100), lastUpdated:val("resUpdated"), companiesUsed:parseInt(val("resCompanies")||"0",10)};
+      if(!data.name){ Toast.show("Version name is required","error"); return; }
+      if(existing) Object.assign(existing,data);
+      else { data.id = Utils.uid("res"); data.downloads = 0; s.resumes.push(data); }
+      App.save(); closeModal(); renderView(); renderSidebar();
+      Toast.show("Resume version saved","success");
+    }}
+  ]);
+}
+
+/* ============================================================
+   STUDY TRACKER
+============================================================ */
+VIEW_RENDERERS.study = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>Study Tracker</h1><p>'+studyProgressPct()+'% of backend topics completed · '+studyHoursTotal().toFixed(1)+' hours logged</p></div></div>';
+  STUDY_TOPICS.forEach(function(group){
+    html += '<div class="card mb-8"><div class="section-title">'+group.cat+'</div>';
+    group.items.forEach(function(topic){
+      var t = s.study[topic];
+      html += '<div class="flex-between" style="padding:9px 0;border-bottom:1px solid var(--border);">' +
+        '<label style="display:flex;align-items:center;gap:10px;flex:1;">' +
+          '<input type="checkbox" data-study-topic="'+Utils.escapeHtml(topic)+'" '+(t.done?'checked':'')+' style="width:16px;height:16px;">' +
+          '<span style="'+(t.done?'text-decoration:line-through;color:var(--text-faint);':'')+'font-size:13px;">'+topic+'</span>' +
+        '</label>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+          '<input type="number" min="0" step="0.5" data-study-hours="'+Utils.escapeHtml(topic)+'" value="'+t.hours+'" style="width:64px;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg-hover);font-size:12px;">' +
+          '<span class="text-muted" style="font-size:11.5px;">hrs</span>' +
+        '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+  });
+  return html;
+};
+VIEW_POST_RENDER.study = function(){
+  document.querySelectorAll("[data-study-topic]").forEach(function(cb){
+    cb.addEventListener("change", function(){
+      var topic = cb.getAttribute("data-study-topic");
+      App.state.study[topic].done = cb.checked;
+      App.save(); checkAchievements(); renderView(); renderSidebar();
+      if(cb.checked) Toast.show(topic + " marked complete!", "success");
+    });
+  });
+  document.querySelectorAll("[data-study-hours]").forEach(function(inp){
+    inp.addEventListener("change", function(){
+      var topic = inp.getAttribute("data-study-hours");
+      var prev = App.state.study[topic].hours || 0;
+      var next = parseFloat(inp.value) || 0;
+      App.state.study[topic].hours = next;
+      logToday({studyHours: next-prev});
+      App.save(); renderView();
+    });
+  });
+};
+
+/* ============================================================
+   DSA TRACKER
+============================================================ */
+VIEW_RENDERERS.dsa = function(){
+  var s = App.state;
+  var totalSolved = totalDSASolved(s);
+  var html = '<div class="page-head"><div><h1>DSA Tracker</h1><p>'+totalSolved+' problems solved across '+DSA_CATEGORIES.length+' categories</p></div></div>';
+  html += '<div class="table-wrap"><table><thead><tr><th>Category</th><th>Easy</th><th>Medium</th><th>Hard</th><th>Solved</th><th>Attempted</th><th>Accuracy</th></tr></thead><tbody>';
+  DSA_CATEGORIES.forEach(function(cat){
+    var d = s.dsa[cat];
+    var acc = d.attempted ? Math.round(d.solved/d.attempted*100) : 0;
+    html += '<tr>' +
+      '<td><strong>'+cat+'</strong></td>' +
+      '<td><input type="number" min="0" data-dsa="'+cat+'|easy" value="'+d.easy+'" style="width:56px;padding:5px;border-radius:6px;border:1px solid var(--border);background:var(--bg-hover);"></td>' +
+      '<td><input type="number" min="0" data-dsa="'+cat+'|medium" value="'+d.medium+'" style="width:56px;padding:5px;border-radius:6px;border:1px solid var(--border);background:var(--bg-hover);"></td>' +
+      '<td><input type="number" min="0" data-dsa="'+cat+'|hard" value="'+d.hard+'" style="width:56px;padding:5px;border-radius:6px;border:1px solid var(--border);background:var(--bg-hover);"></td>' +
+      '<td><input type="number" min="0" data-dsa="'+cat+'|solved" value="'+d.solved+'" style="width:56px;padding:5px;border-radius:6px;border:1px solid var(--border);background:var(--bg-hover);"></td>' +
+      '<td><input type="number" min="0" data-dsa="'+cat+'|attempted" value="'+d.attempted+'" style="width:56px;padding:5px;border-radius:6px;border:1px solid var(--border);background:var(--bg-hover);"></td>' +
+      '<td>'+acc+'%</td>' +
+      '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+};
+VIEW_POST_RENDER.dsa = function(){
+  document.querySelectorAll("[data-dsa]").forEach(function(inp){
+    inp.addEventListener("change", function(){
+      var parts = inp.getAttribute("data-dsa").split("|");
+      App.state.dsa[parts[0]][parts[1]] = parseInt(inp.value||"0",10);
+      App.save(); checkAchievements(); renderView();
+    });
+  });
+};
+
+/* ============================================================
+   SYSTEM DESIGN TRACKER
+============================================================ */
+VIEW_RENDERERS.systemdesign = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>System Design Tracker</h1><p>Practice high-level design problems asked in interviews</p></div></div>';
+  html += '<div class="grid grid-3">';
+  s.systemDesign.forEach(function(p){
+    var diffClass = p.difficulty==="Easy"?"badge-green":p.difficulty==="Medium"?"badge-yellow":"badge-red";
+    html += '<div class="card">' +
+      '<div class="flex-between mb-8"><strong>'+p.name+'</strong><span class="badge '+diffClass+'">'+p.difficulty+'</span></div>' +
+      '<div class="progress-track mb-8"><div class="progress-fill" style="width:'+p.progress+'%"></div></div>' +
+      '<input type="range" min="0" max="100" step="10" value="'+p.progress+'" data-sd-progress="'+p.id+'" style="width:100%;margin-bottom:10px;">' +
+      '<textarea placeholder="Notes / approach..." data-sd-notes="'+p.id+'" style="width:100%;min-height:60px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg-hover);font-size:12.5px;">'+Utils.escapeHtml(p.notes)+'</textarea>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.systemdesign = function(){
+  document.querySelectorAll("[data-sd-progress]").forEach(function(inp){
+    inp.addEventListener("input", function(){
+      var p = App.state.systemDesign.find(function(x){return x.id===inp.getAttribute("data-sd-progress");});
+      p.progress = parseInt(inp.value,10);
+      App.save();
+      inp.previousElementSibling.querySelector(".progress-fill").style.width = p.progress+"%";
+    });
+    inp.addEventListener("change", function(){ renderView(); });
+  });
+  document.querySelectorAll("[data-sd-notes]").forEach(function(ta){
+    ta.addEventListener("input", Utils.debounce(function(){
+      var p = App.state.systemDesign.find(function(x){return x.id===ta.getAttribute("data-sd-notes");});
+      p.notes = ta.value; App.save();
+    }, 400));
+  });
+};
+
+/* ============================================================
+   INTERVIEW QUESTION BANK
+============================================================ */
+let qFilters = { search:"", category:"", favOnly:false };
+VIEW_RENDERERS.questions = function(){
+  var s = App.state;
+  var cats = Array.from(new Set(s.questions.map(function(q){return q.category;}))).sort();
+  var rows = s.questions.slice();
+  if(qFilters.search){
+    var q = qFilters.search.toLowerCase();
+    rows = rows.filter(function(x){ return x.question.toLowerCase().indexOf(q)>-1 || x.category.toLowerCase().indexOf(q)>-1; });
+  }
+  if(qFilters.category) rows = rows.filter(function(x){return x.category===qFilters.category;});
+  if(qFilters.favOnly) rows = rows.filter(function(x){return x.favorite;});
+
+  var completedCount = s.questions.filter(function(q){return q.completed;}).length;
+  var html = '<div class="page-head"><div><h1>Interview Question Bank</h1><p>'+s.questions.length+' curated questions · '+completedCount+' reviewed</p></div>' +
+    '<button class="btn btn-primary" id="addQuestionBtn">+ Add Question</button></div>';
+
+  html += '<div class="toolbar">';
+  html += '<input type="search" id="qSearch" placeholder="Search questions..." value="'+Utils.escapeHtml(qFilters.search)+'">';
+  html += '<select id="qCategoryFilter"><option value="">All Categories</option>' + cats.map(function(c){return '<option value="'+c+'"'+(qFilters.category===c?' selected':'')+'>'+c+'</option>';}).join("") + '</select>';
+  html += '<button class="btn btn-sm" id="qFavToggle">'+(qFilters.favOnly?'★ Favorites Only':'☆ Show Favorites')+'</button>';
+  html += '</div>';
+
+  if(!rows.length){
+    html += '<div class="card"><div class="empty-state"><div class="em-icon">❓</div><div>No questions match your filters.</div></div></div>';
+    return html;
+  }
+
+  html += '<div style="display:flex;flex-direction:column;gap:10px;">';
+  rows.forEach(function(q){
+    html += '<div class="card" style="padding:0;overflow:hidden;">' +
+      '<div style="padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;" data-toggle-q="'+q.id+'">' +
+        '<span class="badge badge-blue">'+q.category+'</span>' +
+        '<span class="badge '+(q.difficulty==="Easy"?"badge-green":q.difficulty==="Medium"?"badge-yellow":"badge-red")+'">'+q.difficulty+'</span>' +
+        '<strong style="flex:1;font-size:13.3px;">'+Utils.escapeHtml(q.question)+'</strong>' +
+        '<button class="icon-btn pin-btn '+(q.favorite?'pinned':'')+'" data-fav-q="'+q.id+'" title="Favorite">★</button>' +
+        (q.completed ? '<span class="badge badge-green">✓ Reviewed</span>' : '') +
+      '</div>' +
+      '<div class="q-answer hidden" id="ans-'+q.id+'" style="padding:0 16px 16px;font-size:13px;color:var(--text-muted);border-top:1px solid var(--border);">' +
+        '<div style="padding-top:12px;">'+Utils.escapeHtml(q.answer)+'</div>' +
+        '<div style="margin-top:10px;display:flex;gap:8px;">' +
+          '<button class="btn btn-sm" data-complete-q="'+q.id+'">'+(q.completed?'Mark Unreviewed':'Mark Reviewed')+'</button>' +
+          '<button class="btn btn-sm btn-danger" data-del-q="'+q.id+'">🗑 Remove</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.questions = function(){
+  document.getElementById("addQuestionBtn").addEventListener("click", openQuestionModal);
+  document.getElementById("qSearch").addEventListener("input", Utils.debounce(function(e){ qFilters.search=e.target.value; renderView(); },250));
+  document.getElementById("qCategoryFilter").addEventListener("change", function(e){ qFilters.category=e.target.value; renderView(); });
+  document.getElementById("qFavToggle").addEventListener("click", function(){ qFilters.favOnly=!qFilters.favOnly; renderView(); });
+  document.querySelectorAll("[data-toggle-q]").forEach(function(el){
+    el.addEventListener("click", function(e){
+      if(e.target.closest("[data-fav-q]")) return;
+      var ans = document.getElementById("ans-"+el.getAttribute("data-toggle-q"));
+      ans.classList.toggle("hidden");
+    });
+  });
+  document.querySelectorAll("[data-fav-q]").forEach(function(btn){
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      var q = App.state.questions.find(function(x){return x.id===btn.getAttribute("data-fav-q");});
+      q.favorite = !q.favorite; App.save(); renderView();
+    });
+  });
+  document.querySelectorAll("[data-complete-q]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var q = App.state.questions.find(function(x){return x.id===btn.getAttribute("data-complete-q");});
+      q.completed = !q.completed; App.save(); renderView();
+    });
+  });
+  document.querySelectorAll("[data-del-q]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      App.state.questions = App.state.questions.filter(function(x){return x.id!==btn.getAttribute("data-del-q");});
+      App.save(); renderView();
+    });
+  });
+};
+function openQuestionModal(){
+  var body = '' +
+    field("Category","qNewCategory","","e.g. Node.js") +
+    '<div class="field"><label>Question</label><textarea id="qNewQuestion"></textarea></div>' +
+    '<div class="field"><label>Answer</label><textarea id="qNewAnswer"></textarea></div>' +
+    selectField("Difficulty","qNewDifficulty",["Easy","Medium","Hard"],"Medium");
+  openModal("Add Custom Question", body, [
+    {label:"Cancel", onClick:closeModal},
+    {label:"Add Question", primary:true, onClick:function(){
+      var category = val("qNewCategory"), question = val("qNewQuestion"), answer = val("qNewAnswer");
+      if(!category||!question){ Toast.show("Category and question are required","error"); return; }
+      App.state.questions.push({id:Utils.uid("q"), category:category, question:question, answer:answer||"—", difficulty:val("qNewDifficulty"), favorite:false, completed:false});
+      App.save(); closeModal(); renderView();
+      Toast.show("Question added","success");
+    }}
+  ]);
+}
+
+/* ============================================================
+   NOTES
+============================================================ */
+let noteFilters = { search:"" };
+VIEW_RENDERERS.notes = function(){
+  var s = App.state;
+  var rows = s.notes.slice();
+  if(noteFilters.search){
+    var q = noteFilters.search.toLowerCase();
+    rows = rows.filter(function(n){ return (n.title||"").toLowerCase().indexOf(q)>-1 || (n.content||"").toLowerCase().indexOf(q)>-1; });
+  }
+  rows.sort(function(a,b){ if(a.pinned!==b.pinned) return a.pinned?-1:1; return (b.updatedAt||"").localeCompare(a.updatedAt||""); });
+
+  var html = '<div class="page-head"><div><h1>Notes</h1><p>'+s.notes.length+' notes · autosaved</p></div>' +
+    '<button class="btn btn-primary" id="addNoteBtn">+ New Note</button></div>';
+  html += '<div class="toolbar"><input type="search" id="noteSearch" placeholder="Search notes..." value="'+Utils.escapeHtml(noteFilters.search)+'"></div>';
+
+  if(!rows.length){
+    html += '<div class="card"><div class="empty-state"><div class="em-icon">📝</div><div>No notes yet. Capture interview learnings, prep checklists, or ideas.</div></div></div>';
+    return html;
+  }
+  html += '<div class="grid grid-3">';
+  rows.forEach(function(n){
+    html += '<div class="card" data-note-card="'+n.id+'">' +
+      '<div class="flex-between mb-8">' +
+        '<input type="text" data-note-title="'+n.id+'" value="'+Utils.escapeHtml(n.title)+'" placeholder="Title" style="border:none;background:transparent;font-weight:700;font-size:14px;flex:1;outline:none;">' +
+        '<button class="icon-btn pin-btn '+(n.pinned?'pinned':'')+'" data-pin-note="'+n.id+'">📌</button>' +
+      '</div>' +
+      '<textarea data-note-content="'+n.id+'" placeholder="Start typing..." style="width:100%;min-height:100px;border:none;background:transparent;font-size:12.5px;outline:none;resize:vertical;">'+Utils.escapeHtml(n.content)+'</textarea>' +
+      '<div class="flex-between mt-8"><span class="text-muted" style="font-size:11px;">'+Utils.fmtDate((n.updatedAt||"").slice(0,10))+'</span><button class="btn btn-sm btn-danger" data-del-note="'+n.id+'">🗑</button></div>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.notes = function(){
+  document.getElementById("addNoteBtn").addEventListener("click", createQuickNote);
+  document.getElementById("noteSearch").addEventListener("input", Utils.debounce(function(e){ noteFilters.search=e.target.value; renderView(); },250));
+  document.querySelectorAll("[data-note-title]").forEach(function(inp){
+    inp.addEventListener("input", Utils.debounce(function(){
+      var n = App.state.notes.find(function(x){return x.id===inp.getAttribute("data-note-title");});
+      n.title = inp.value; n.updatedAt = new Date().toISOString(); App.save();
+    }, 400));
+  });
+  document.querySelectorAll("[data-note-content]").forEach(function(ta){
+    ta.addEventListener("input", Utils.debounce(function(){
+      var n = App.state.notes.find(function(x){return x.id===ta.getAttribute("data-note-content");});
+      n.content = ta.value; n.updatedAt = new Date().toISOString(); App.save();
+    }, 400));
+  });
+  document.querySelectorAll("[data-pin-note]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var n = App.state.notes.find(function(x){return x.id===btn.getAttribute("data-pin-note");});
+      n.pinned = !n.pinned; App.save(); renderView();
+    });
+  });
+  document.querySelectorAll("[data-del-note]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      App.state.notes = App.state.notes.filter(function(x){return x.id!==btn.getAttribute("data-del-note");});
+      App.save(); renderView(); renderSidebar();
+    });
+  });
+};
+function createQuickNote(){
+  App.state.notes.unshift({id:Utils.uid("note"), title:"Untitled Note", content:"", pinned:false, updatedAt:new Date().toISOString()});
+  App.save(); navigateTo("notes");
+}
+
+/* ============================================================
+   30-DAY ROADMAP
+============================================================ */
+VIEW_RENDERERS.roadmap = function(){
+  var s = App.state;
+  var today = currentDayNumber();
+  var completedCount = s.roadmap.filter(function(d){return d.status==="completed";}).length;
+  var html = '<div class="page-head"><div><h1>30 Day Roadmap</h1><p>'+completedCount+' / 30 days completed · Currently on Day '+today+'</p></div></div>';
+  html += '<div class="progress-track mb-8" style="height:10px;"><div class="progress-fill success" style="width:'+Math.round(completedCount/30*100)+'%"></div></div>';
+  html += '<div class="grid grid-4">';
+  s.roadmap.forEach(function(d){
+    var locked = d.status === "locked";
+    html += '<div class="card day-card '+(locked?'locked':'')+'" data-open-day="'+d.day+'">' +
+      '<div class="flex-between mb-8"><strong>Day '+d.day+'</strong>' + statusBadge(d.status) + '</div>' +
+      '<div style="font-size:12.5px;font-weight:600;margin-bottom:6px;">'+d.theme+'</div>' +
+      '<div class="progress-track mb-8"><div class="progress-fill" style="width:'+d.completion+'%"></div></div>' +
+      '<div class="text-muted" style="font-size:11.5px;">'+(locked?'🔒 Complete previous day to unlock':d.completion+'% complete')+'</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.roadmap = function(){
+  document.querySelectorAll("[data-open-day]").forEach(function(card){
+    card.addEventListener("click", function(){
+      var dayNum = parseInt(card.getAttribute("data-open-day"),10);
+      var d = App.state.roadmap[dayNum-1];
+      if(d.status === "locked"){ Toast.show("Complete Day "+(dayNum-1)+" first to unlock this day","error"); return; }
+      openDayModal(dayNum);
+    });
+  });
+};
+function openDayModal(dayNum){
+  var d = App.state.roadmap[dayNum-1];
+  var body = '' +
+    '<div class="grid grid-2 mb-8" style="gap:10px;">' +
+      infoBlock("📘 Backend Topic", d.backendTopic) +
+      infoBlock("🧩 DSA Topic", d.dsaTopic) +
+      infoBlock("🏗️ System Design", d.systemDesignTopic) +
+      infoBlock("🗣️ English Practice", d.englishPractice) +
+      infoBlock("🎤 HR Prep", d.hrPrep) +
+      infoBlock("📨 Applications Target", d.applicationsTarget + " applications") +
+      infoBlock("🤝 Recruiter Outreach", d.recruiterOutreach + " messages") +
+      infoBlock("🎙️ Mock Interview", d.mockInterview ? "Scheduled today" : "Not required today") +
+    '</div>' +
+    '<div class="field"><label>Completion: <span id="dayCompletionLabel">'+d.completion+'%</span></label><input type="range" min="0" max="100" step="10" id="dayCompletion" value="'+d.completion+'"></div>' +
+    '<div class="field"><label>Notes</label><textarea id="dayNotes">'+Utils.escapeHtml(d.notes)+'</textarea></div>';
+  var overlay = openModal("Day " + dayNum + " · " + d.theme, body, [
+    {label:"Cancel", onClick:closeModal},
+    {label:"Save Day", primary:true, onClick:function(){
+      d.completion = parseInt(document.getElementById("dayCompletion").value,10);
+      d.notes = val("dayNotes");
+      d.status = d.completion >= 100 ? "completed" : (d.completion > 0 ? "in-progress" : d.status);
+      if(d.completion >= 100 && App.state.roadmap[dayNum] && App.state.roadmap[dayNum].status === "locked"){
+        App.state.roadmap[dayNum].status = "in-progress";
+        Toast.show("Day " + (dayNum+1) + " unlocked!", "success");
+        Confetti.fire();
+      }
+      App.save(); checkAchievements(); closeModal(); renderView(); renderSidebar();
+    }}
+  ]);
+  overlay.querySelector("#dayCompletion").addEventListener("input", function(e){
+    overlay.querySelector("#dayCompletionLabel").textContent = e.target.value + "%";
+  });
+}
+function infoBlock(label, value){
+  return '<div style="background:var(--bg-hover);border-radius:10px;padding:10px 12px;"><div class="text-muted" style="font-size:11px;margin-bottom:3px;">'+label+'</div><div style="font-size:12.5px;font-weight:600;">'+Utils.escapeHtml(String(value))+'</div></div>';
+}
+
+/* ============================================================
+   DAILY PLANNER
+============================================================ */
+const PLANNER_BLOCKS = [
+  {id:"morning", label:"🌅 Morning", sub:"Job Applications"},
+  {id:"afternoon", label:"☀️ Afternoon", sub:"Backend Learning"},
+  {id:"evening", label:"🌆 Evening", sub:"DSA Practice"},
+  {id:"night", label:"🌙 Night", sub:"Mock Interview / Review"}
+];
+let plannerDate = Utils.todayISO();
+function getPlannerDay(dateISO){
+  if(!App.state.planner[dateISO]) App.state.planner[dateISO] = {morning:[],afternoon:[],evening:[],night:[]};
+  return App.state.planner[dateISO];
+}
+VIEW_RENDERERS.planner = function(){
+  var day = getPlannerDay(plannerDate);
+  var totalTasks = 0, doneTasks = 0;
+  PLANNER_BLOCKS.forEach(function(b){ totalTasks += day[b.id].length; doneTasks += day[b.id].filter(function(t){return t.done;}).length; });
+  var pct = totalTasks ? Math.round(doneTasks/totalTasks*100) : 0;
+
+  var html = '<div class="page-head"><div><h1>Daily Planner</h1><p>'+doneTasks+' / '+totalTasks+' tasks complete ('+pct+'%)</p></div>' +
+    '<input type="date" id="plannerDateInput" value="'+plannerDate+'" class="btn btn-sm" style="cursor:pointer;"></div>';
+  html += '<div class="grid grid-4">';
+  PLANNER_BLOCKS.forEach(function(b){
+    html += '<div class="card">' +
+      '<div class="section-title">'+b.label+' <span class="tag">'+b.sub+'</span></div>';
+    day[b.id].forEach(function(t){
+      html += '<div class="flex-between" style="padding:7px 0;border-bottom:1px solid var(--border);gap:8px;">' +
+        '<label style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">' +
+          '<input type="checkbox" data-task="'+b.id+'|'+t.id+'" '+(t.done?'checked':'')+' style="width:15px;height:15px;flex-shrink:0;">' +
+          '<span style="font-size:12.5px;'+(t.done?'text-decoration:line-through;color:var(--text-faint);':'')+'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+Utils.escapeHtml(t.text)+'</span>' +
+        '</label>' +
+        priorityDot(t.priority) +
+        '<button class="icon-btn" style="width:26px;height:26px;font-size:11px;" data-del-task="'+b.id+'|'+t.id+'">✕</button>' +
+      '</div>';
+    });
+    html += '<div style="margin-top:10px;"><input type="text" placeholder="+ Add task, press Enter" data-add-task="'+b.id+'" style="width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-hover);font-size:12.5px;outline:none;"></div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+function priorityDot(p){
+  var color = p==="High" ? "var(--danger)" : p==="Medium" ? "var(--warning)" : "var(--text-faint)";
+  return '<span class="status-dot" style="background:'+color+';flex-shrink:0;" title="'+ (p||"Low") +' priority"></span>';
+}
+VIEW_POST_RENDER.planner = function(){
+  document.getElementById("plannerDateInput").addEventListener("change", function(e){ plannerDate = e.target.value; renderView(); });
+  document.querySelectorAll("[data-add-task]").forEach(function(inp){
+    inp.addEventListener("keydown", function(e){
+      if(e.key === "Enter" && inp.value.trim()){
+        var block = inp.getAttribute("data-add-task");
+        getPlannerDay(plannerDate)[block].push({id:Utils.uid("t"), text:inp.value.trim(), done:false, priority:"Medium"});
+        App.save(); renderView();
+      }
+    });
+  });
+  document.querySelectorAll("[data-task]").forEach(function(cb){
+    cb.addEventListener("change", function(){
+      var parts = cb.getAttribute("data-task").split("|");
+      var task = getPlannerDay(plannerDate)[parts[0]].find(function(t){return t.id===parts[1];});
+      task.done = cb.checked; App.save(); renderView();
+    });
+  });
+  document.querySelectorAll("[data-del-task]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var parts = btn.getAttribute("data-del-task").split("|");
+      var arr = getPlannerDay(plannerDate)[parts[0]];
+      getPlannerDay(plannerDate)[parts[0]] = arr.filter(function(t){return t.id!==parts[1];});
+      App.save(); renderView();
+    });
+  });
+};
+
+/* ============================================================
+   ACHIEVEMENTS
+============================================================ */
+VIEW_RENDERERS.achievements = function(){
+  var s = App.state;
+  var unlockedCount = s.achievementsUnlocked.length;
+  var html = '<div class="page-head"><div><h1>Achievements</h1><p>'+unlockedCount+' / '+ACHIEVEMENT_DEFS.length+' badges unlocked</p></div></div>';
+  html += '<div class="grid grid-4">';
+  ACHIEVEMENT_DEFS.forEach(function(a){
+    var unlocked = s.achievementsUnlocked.indexOf(a.id) > -1;
+    html += '<div class="card" style="text-align:center;'+(unlocked?'':'opacity:.45;')+'">' +
+      '<div style="font-size:34px;margin-bottom:8px;">'+a.icon+'</div>' +
+      '<div style="font-weight:700;font-size:13.5px;margin-bottom:4px;">'+a.label+'</div>' +
+      '<div class="text-muted" style="font-size:11.5px;">'+a.desc+'</div>' +
+      (unlocked ? '<div class="badge badge-green mt-8">Unlocked</div>' : '<div class="badge badge-gray mt-8">Locked</div>') +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+};
+
+/* ============================================================
+   ANALYTICS — Canvas Charts
+============================================================ */
+function drawBarChart(canvas, labels, values, color){
+  var ctx = canvas.getContext("2d");
+  var dpr = window.devicePixelRatio || 1;
+  var w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*dpr; canvas.height = h*dpr; ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  var textColor = getComputedStyle(document.body).getPropertyValue("--text-muted").trim() || "#888";
+  var max = Math.max.apply(null, values.concat([1]));
+  var padL = 30, padB = 24, padT = 12, padR = 10;
+  var chartW = w - padL - padR, chartH = h - padB - padT;
+  var barW = chartW / values.length * 0.6;
+  var gap = chartW / values.length;
+  ctx.strokeStyle = "rgba(128,128,128,0.15)";
+  ctx.beginPath();
+  for(var g=0; g<=4; g++){
+    var y = padT + chartH - (g/4)*chartH;
+    ctx.moveTo(padL, y); ctx.lineTo(w-padR, y);
+  }
+  ctx.stroke();
+  ctx.fillStyle = textColor; ctx.font = "10px sans-serif"; ctx.textAlign="right";
+  for(var g2=0; g2<=4; g2++){
+    var val = Math.round(max*g2/4);
+    var y2 = padT + chartH - (g2/4)*chartH;
+    ctx.fillText(val, padL-6, y2+3);
+  }
+  values.forEach(function(v,i){
+    var barH = max ? (v/max)*chartH : 0;
+    var x = padL + i*gap + (gap-barW)/2;
+    var y = padT + chartH - barH;
+    var grad = ctx.createLinearGradient(0,y,0,padT+chartH);
+    grad.addColorStop(0, color || "#6366f1");
+    grad.addColorStop(1, "rgba(99,102,241,0.3)");
+    ctx.fillStyle = grad;
+    roundRect(ctx, x, y, barW, barH, 4);
+    ctx.fill();
+    ctx.fillStyle = textColor; ctx.font = "10px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(labels[i], x+barW/2, h-6);
+  });
+}
+function roundRect(ctx,x,y,w,h,r){
+  if(h<=0) h=0.001;
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawLineChart(canvas, labels, values, color){
+  var ctx = canvas.getContext("2d");
+  var dpr = window.devicePixelRatio || 1;
+  var w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*dpr; canvas.height = h*dpr; ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  var textColor = getComputedStyle(document.body).getPropertyValue("--text-muted").trim() || "#888";
+  var max = Math.max.apply(null, values.concat([1]));
+  var padL = 30, padB = 24, padT = 12, padR = 14;
+  var chartW = w - padL - padR, chartH = h - padB - padT;
+  ctx.strokeStyle = "rgba(128,128,128,0.15)";
+  ctx.beginPath();
+  for(var g=0; g<=4; g++){ var y = padT + chartH - (g/4)*chartH; ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); }
+  ctx.stroke();
+  var pts = values.map(function(v,i){
+    return { x: padL + (values.length>1 ? i/(values.length-1)*chartW : chartW/2), y: padT + chartH - (max? v/max*chartH : 0) };
+  });
+  var grad = ctx.createLinearGradient(0,padT,0,padT+chartH);
+  grad.addColorStop(0, (color||"#6366f1")+"55"); grad.addColorStop(1,(color||"#6366f1")+"00");
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, padT+chartH);
+  pts.forEach(function(p){ ctx.lineTo(p.x,p.y); });
+  ctx.lineTo(pts[pts.length-1].x, padT+chartH);
+  ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+  ctx.beginPath();
+  pts.forEach(function(p,i){ if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+  ctx.strokeStyle = color || "#6366f1"; ctx.lineWidth = 2.5; ctx.stroke();
+  pts.forEach(function(p){ ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fillStyle = color||"#6366f1"; ctx.fill(); });
+  ctx.fillStyle = textColor; ctx.font = "10px sans-serif"; ctx.textAlign="center";
+  labels.forEach(function(l,i){ ctx.fillText(l, pts[i].x, h-6); });
+}
+function drawPieChart(canvas, labels, values, colors){
+  var ctx = canvas.getContext("2d");
+  var dpr = window.devicePixelRatio || 1;
+  var w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*dpr; canvas.height = h*dpr; ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  var total = values.reduce(function(a,b){return a+b;},0) || 1;
+  var cx = w*0.32, cy = h/2, r = Math.min(cx,cy)-8;
+  var start = -Math.PI/2;
+  values.forEach(function(v,i){
+    var angle = v/total*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,start+angle);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    start += angle;
+  });
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.55,0,Math.PI*2); ctx.fill();
+  ctx.globalCompositeOperation = "source-over";
+  var textColor = getComputedStyle(document.body).getPropertyValue("--text").trim() || "#111";
+  var legendX = w*0.62, legendY = 16;
+  ctx.textAlign = "left"; ctx.font = "11px sans-serif";
+  labels.forEach(function(l,i){
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillRect(legendX, legendY+i*20, 10, 10);
+    ctx.fillStyle = textColor;
+    ctx.fillText(l + " (" + values[i] + ")", legendX+16, legendY+i*20+9);
+  });
+}
+const CHART_COLORS = ["#6366f1","#8b5cf6","#10b981","#f59e0b","#ef4444","#3b82f6","#ec4899","#14b8a6"];
+
+VIEW_RENDERERS.analytics = function(){
+  var html = '<div class="page-head"><div><h1>Analytics</h1><p>Your job search performance, visualized</p></div></div>';
+  html += '<div class="grid grid-2 mb-8">';
+  html += chartCard("apps7", "Applications (Last 7 Days)");
+  html += chartCard("study7", "Study Hours (Last 7 Days)");
+  html += '</div>';
+  html += '<div class="grid grid-2 mb-8">';
+  html += chartCard("statusPie", "Applications by Status");
+  html += chartCard("weekConsistency", "Weekly Consistency");
+  html += '</div>';
+  html += '<div class="grid grid-2 mb-8">';
+  html += chartCard("byCity", "Applications by City");
+  html += chartCard("byRole", "Applications by Role");
+  html += '</div>';
+  html += '<div class="grid grid-2">';
+  html += chartCard("dsaProgress", "DSA Completion by Category");
+  html += chartCard("interviewOutcome", "Interview Success Rate");
+  html += '</div>';
+  return html;
+};
+function chartCard(id, title){
+  return '<div class="card"><div class="section-title">'+title+'</div><canvas id="chart-'+id+'" style="width:100%;height:220px;"></canvas></div>';
+}
+VIEW_POST_RENDER.analytics = function(){
+  var s = App.state;
+  var today = new Date();
+  var last7labels = [], last7apps = [], last7study = [];
+  for(var i=6;i>=0;i--){
+    var d = new Date(today); d.setDate(today.getDate()-i);
+    var iso = d.toISOString().slice(0,10);
+    last7labels.push(d.toLocaleDateString(undefined,{weekday:"short"}));
+    var log = s.dailyLogs[iso] || {applications:0, studyHours:0};
+    last7apps.push(log.applications||0);
+    last7study.push(log.studyHours||0);
+  }
+  drawBarChart(document.getElementById("chart-apps7"), last7labels, last7apps, "#6366f1");
+  drawLineChart(document.getElementById("chart-study7"), last7labels, last7study, "#10b981");
+
+  var statusCounts = {};
+  s.applications.forEach(function(a){ statusCounts[a.status] = (statusCounts[a.status]||0)+1; });
+  var statusLabels = Object.keys(statusCounts);
+  drawPieChart(document.getElementById("chart-statusPie"), statusLabels.length?statusLabels:["No data"], statusLabels.length?statusLabels.map(function(k){return statusCounts[k];}):[1], CHART_COLORS);
+
+  var weekLabels = [], weekVals = [];
+  var wk = weekRange();
+  wk.forEach(function(d){
+    var dt = new Date(d+"T00:00:00");
+    weekLabels.push(dt.toLocaleDateString(undefined,{weekday:"short"}));
+    var log = s.dailyLogs[d];
+    weekVals.push(log ? ((log.applications>0?1:0)+(log.studyHours>0?1:0)) : 0);
+  });
+  drawBarChart(document.getElementById("chart-weekConsistency"), weekLabels, weekVals, "#f59e0b");
+
+  var cityCounts = {};
+  s.applications.forEach(function(a){ var c=a.location||"Unknown"; cityCounts[c]=(cityCounts[c]||0)+1; });
+  var cityEntries = Object.entries(cityCounts).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+  drawBarChart(document.getElementById("chart-byCity"), cityEntries.length?cityEntries.map(function(e){return e[0];}):["No data"], cityEntries.length?cityEntries.map(function(e){return e[1];}):[0], "#3b82f6");
+
+  var roleCounts = {};
+  s.applications.forEach(function(a){ var r=a.role||"Unknown"; roleCounts[r]=(roleCounts[r]||0)+1; });
+  var roleEntries = Object.entries(roleCounts).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+  drawBarChart(document.getElementById("chart-byRole"), roleEntries.length?roleEntries.map(function(e){return e[0];}):["No data"], roleEntries.length?roleEntries.map(function(e){return e[1];}):[0], "#ec4899");
+
+  var dsaLabels = DSA_CATEGORIES.slice(0,8);
+  var dsaVals = dsaLabels.map(function(c){return s.dsa[c].solved;});
+  drawBarChart(document.getElementById("chart-dsaProgress"), dsaLabels, dsaVals, "#8b5cf6");
+
+  var passed = s.interviews.filter(function(i){return i.result==="Passed";}).length;
+  var failed = s.interviews.filter(function(i){return i.result==="Failed";}).length;
+  var pending = s.interviews.filter(function(i){return i.result==="Pending" || !i.result;}).length;
+  drawPieChart(document.getElementById("chart-interviewOutcome"), ["Passed","Failed","Pending"], [passed,failed,pending], ["#10b981","#ef4444","#9aa0b0"]);
+};
+
+/* ============================================================
+   POMODORO TIMER
+============================================================ */
+const Pomodoro = {
+  duration: 25*60,
+  remaining: 25*60,
+  running: false,
+  intervalId: null,
+  mode: "25",
+  start(){
+    if(this.running) return;
+    this.running = true;
+    var self = this;
+    this.intervalId = setInterval(function(){
+      self.remaining--;
+      if(self.remaining <= 0){
+        self.complete();
+      }
+      updatePomodoroDisplay();
+    }, 1000);
+  },
+  pause(){ this.running = false; clearInterval(this.intervalId); },
+  reset(){
+    this.pause();
+    this.remaining = this.duration;
+    updatePomodoroDisplay();
+  },
+  complete(){
+    this.pause();
+    this.remaining = 0;
+    updatePomodoroDisplay();
+    App.state.pomodoro.sessions++;
+    App.state.pomodoro.focusMinutes += Math.round(this.duration/60);
+    App.state.pomodoro.log.push({date:Utils.todayISO(), minutes:Math.round(this.duration/60)});
+    logToday({studyHours: this.duration/3600});
+    App.save();
+    Toast.show("Pomodoro session complete! 🎉", "success");
+    Confetti.fire();
+    this.remaining = this.duration;
+    if(App.currentView === "pomodoro") renderView();
+  },
+  setDuration(minutes){
+    this.duration = minutes*60;
+    this.remaining = minutes*60;
+    this.mode = String(minutes);
+    updatePomodoroDisplay();
+  }
+};
+VIEW_RENDERERS.pomodoro = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>Pomodoro Timer</h1><p>Stay focused with structured work sessions</p></div></div>';
+  html += '<div class="grid grid-2">';
+  html += '<div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;">';
+  html += '<div style="display:flex;gap:8px;margin-bottom:24px;">' +
+    '<button class="btn btn-sm" data-pomo-preset="25">25 min</button>' +
+    '<button class="btn btn-sm" data-pomo-preset="50">50 min</button>' +
+    '<button class="btn btn-sm" id="pomoCustomBtn">Custom</button>' +
+    '</div>';
+  html += '<div id="pomodoroDisplay" style="font-size:64px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-2px;margin-bottom:24px;">'+formatTime(Pomodoro.remaining)+'</div>';
+  html += '<div style="display:flex;gap:10px;">' +
+    '<button class="btn btn-primary" id="pomoStartBtn">▶ Start</button>' +
+    '<button class="btn" id="pomoPauseBtn">⏸ Pause</button>' +
+    '<button class="btn" id="pomoResetBtn">⟲ Reset</button>' +
+    '</div>';
+  html += '</div>';
+  html += '<div class="card">';
+  html += '<div class="section-title">📊 Statistics</div>';
+  html += '<div class="grid grid-2" style="gap:12px;">';
+  html += '<div style="background:var(--bg-hover);border-radius:12px;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:800;">'+s.pomodoro.sessions+'</div><div class="text-muted" style="font-size:11.5px;">Sessions Completed</div></div>';
+  html += '<div style="background:var(--bg-hover);border-radius:12px;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:800;">'+(s.pomodoro.focusMinutes/60).toFixed(1)+'h</div><div class="text-muted" style="font-size:11.5px;">Total Focus Hours</div></div>';
+  html += '</div>';
+  html += '<div class="mt-16" style="max-height:180px;overflow-y:auto;">';
+  if(!s.pomodoro.log.length){
+    html += '<div class="text-muted" style="font-size:12.5px;">No sessions logged yet.</div>';
+  } else {
+    s.pomodoro.log.slice().reverse().slice(0,15).forEach(function(l){
+      html += '<div class="flex-between" style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;"><span>'+Utils.fmtDate(l.date)+'</span><span class="text-muted">'+l.minutes+' min</span></div>';
+    });
+  }
+  html += '</div></div>';
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.pomodoro = function(){
+  document.querySelectorAll("[data-pomo-preset]").forEach(function(btn){
+    btn.addEventListener("click", function(){ Pomodoro.setDuration(parseInt(btn.getAttribute("data-pomo-preset"),10)); });
+  });
+  document.getElementById("pomoCustomBtn").addEventListener("click", function(){
+    var body = field("Minutes","customPomoMinutes",25,null,"number");
+    openModal("Custom Timer", body, [
+      {label:"Cancel", onClick:closeModal},
+      {label:"Set", primary:true, onClick:function(){
+        var m = parseInt(val("customPomoMinutes")||"25",10);
+        Pomodoro.setDuration(Utils.clamp(m,1,180));
+        closeModal();
+      }}
+    ]);
+  });
+  document.getElementById("pomoStartBtn").addEventListener("click", function(){ Pomodoro.start(); });
+  document.getElementById("pomoPauseBtn").addEventListener("click", function(){ Pomodoro.pause(); });
+  document.getElementById("pomoResetBtn").addEventListener("click", function(){ Pomodoro.reset(); });
+};
+function updatePomodoroDisplay(){
+  var el = document.getElementById("pomodoroDisplay");
+  if(el) el.textContent = formatTime(Pomodoro.remaining);
+}
+function formatTime(sec){
+  var m = Math.floor(sec/60), s = sec%60;
+  return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+}
+
+/* ============================================================
+   SETTINGS
+============================================================ */
+const ACCENT_PRESETS = ["#6366f1","#8b5cf6","#ec4899","#ef4444","#f59e0b","#10b981","#14b8a6","#3b82f6"];
+VIEW_RENDERERS.settings = function(){
+  var s = App.state;
+  var html = '<div class="page-head"><div><h1>Settings</h1><p>Preferences and data management</p></div></div>';
+  html += '<div class="grid grid-2">';
+
+  html += '<div class="card">';
+  html += '<div class="section-title">🎨 Appearance</div>';
+  html += '<div class="field"><label>Theme</label><div style="display:flex;gap:10px;">' +
+    '<button class="btn '+(s.theme==="light"?"btn-primary":"")+'" id="lightModeBtn">☀️ Light</button>' +
+    '<button class="btn '+(s.theme==="dark"?"btn-primary":"")+'" id="darkModeBtn">🌙 Dark</button>' +
+  '</div></div>';
+  html += '<div class="field"><label>Accent Color</label><div style="display:flex;gap:8px;flex-wrap:wrap;">';
+  ACCENT_PRESETS.forEach(function(c){
+    html += '<button data-accent="'+c+'" style="width:32px;height:32px;border-radius:50%;background:'+c+';border:2px solid '+(s.accent===c?"var(--text)":"transparent")+';cursor:pointer;"></button>';
+  });
+  html += '<input type="color" id="customAccent" value="'+s.accent+'" style="width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;">';
+  html += '</div></div>';
+  html += '</div>';
+
+  html += '<div class="card">';
+  html += '<div class="section-title">💾 Data Management</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:10px;">';
+  html += '<button class="btn" id="settingsBackupBtn">⬇ Backup All Data (JSON)</button>';
+  html += '<button class="btn" id="settingsRestoreBtn">⬆ Restore from JSON</button><input type="file" id="restoreFileInput" accept=".json" class="hidden">';
+  html += '<button class="btn" id="settingsExportAppsBtn">⬇ Export Applications (CSV)</button>';
+  html += '<button class="btn" id="settingsImportAppsBtn">⬆ Import Applications (CSV)</button>';
+  html += '<button class="btn btn-danger" id="settingsClearCacheBtn">🗑 Clear Cache</button>';
+  html += '<button class="btn btn-danger" id="settingsResetBtn">⚠ Reset All Data</button>';
+  html += '</div></div>';
+
+  html += '</div>';
+  return html;
+};
+VIEW_POST_RENDER.settings = function(){
+  document.getElementById("lightModeBtn").addEventListener("click", function(){ App.state.theme="light"; applyTheme(); App.save(); renderView(); renderSidebar(); });
+  document.getElementById("darkModeBtn").addEventListener("click", function(){ App.state.theme="dark"; applyTheme(); App.save(); renderView(); renderSidebar(); });
+  document.querySelectorAll("[data-accent]").forEach(function(btn){
+    btn.addEventListener("click", function(){ App.state.accent = btn.getAttribute("data-accent"); applyTheme(); App.save(); renderView(); });
+  });
+  document.getElementById("customAccent").addEventListener("input", function(e){ App.state.accent = e.target.value; applyTheme(); App.save(); });
+  document.getElementById("settingsBackupBtn").addEventListener("click", backupJSON);
+  document.getElementById("settingsRestoreBtn").addEventListener("click", function(){ document.getElementById("restoreFileInput").click(); });
+  document.getElementById("restoreFileInput").addEventListener("change", restoreJSON);
+  document.getElementById("settingsExportAppsBtn").addEventListener("click", exportApplicationsCSV);
+  document.getElementById("settingsImportAppsBtn").addEventListener("click", function(){
+    navigateTo("applications");
+    setTimeout(function(){ document.getElementById("importAppsFile").click(); }, 100);
+  });
+  document.getElementById("settingsClearCacheBtn").addEventListener("click", function(){
+    openModal("Clear Cache", "<p>This will clear temporary UI state but keep your saved data. Continue?</p>", [
+      {label:"Cancel", onClick:closeModal},
+      {label:"Clear", primary:true, onClick:function(){ closeModal(); Toast.show("Cache cleared","success"); }}
+    ]);
+  });
+  document.getElementById("settingsResetBtn").addEventListener("click", function(){
+    openModal("Reset All Data", "<p><strong>This cannot be undone.</strong> All applications, notes, progress, and settings will be permanently deleted.</p>", [
+      {label:"Cancel", onClick:closeModal},
+      {label:"Yes, Reset Everything", primary:true, onClick:function(){
+        Store.clear();
+        App.state = defaultState();
+        App.saveNow();
+        applyTheme();
+        closeModal();
+        navigateTo("dashboard");
+        Toast.show("All data has been reset","info");
+      }}
+    ]);
+  });
+};
+function backupJSON(){
+  Utils.download("job-accelerator-backup-"+Utils.todayISO()+".json", JSON.stringify(App.state, null, 2), "application/json");
+  Toast.show("Backup downloaded","success");
+}
+function restoreJSON(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      var parsed = JSON.parse(ev.target.result);
+      App.state = mergeState(defaultState(), parsed);
+      App.saveNow();
+      applyTheme();
+      navigateTo("dashboard");
+      Toast.show("Data restored successfully","success");
+    }catch(err){ Toast.show("Restore failed: invalid JSON file","error"); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+}
+
+/* ============================================================
+   COMMAND PALETTE
+============================================================ */
+function openCommandPalette(){
+  var allNav = [];
+  NAV_SECTIONS.forEach(function(sec){ sec.items.forEach(function(it){ allNav.push(it); }); });
+  var body = '<input type="text" id="cmdInput" placeholder="Type a page name..." style="width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg-hover);font-size:14px;outline:none;margin-bottom:12px;">' +
+    '<div id="cmdResults" style="display:flex;flex-direction:column;gap:4px;max-height:320px;overflow-y:auto;"></div>';
+  var overlay = openModal("Jump to...", body, null);
+  var input = overlay.querySelector("#cmdInput");
+  var results = overlay.querySelector("#cmdResults");
+  function renderResults(query){
+    query = (query||"").toLowerCase();
+    var matches = allNav.filter(function(it){ return it.label.toLowerCase().indexOf(query) > -1; });
+    results.innerHTML = matches.map(function(it){
+      return '<div class="nav-item" data-cmd-nav="'+it.id+'" style="cursor:pointer;"><span class="nav-icon">'+it.icon+'</span><span>'+it.label+'</span></div>';
+    }).join("") || '<div class="text-muted" style="padding:10px;font-size:13px;">No matches</div>';
+    results.querySelectorAll("[data-cmd-nav]").forEach(function(el){
+      el.addEventListener("click", function(){ navigateTo(el.getAttribute("data-cmd-nav")); closeModal(); });
+    });
+  }
+  renderResults("");
+  input.addEventListener("input", function(){ renderResults(input.value); });
+  input.focus();
+}
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+============================================================ */
+document.addEventListener("keydown", function(e){
+  if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k"){
+    e.preventDefault();
+    openCommandPalette();
+  }
+  if(e.key === "Escape"){ closeModal(); }
+});
+
+/* ============================================================
+   APP INIT
+============================================================ */
+function init(){
+  applyTheme();
+  // Auto-unlock day 1 if nothing in progress yet
+  if(App.state.roadmap[0].status === "locked") App.state.roadmap[0].status = "in-progress";
+  renderSidebar();
+  renderHeader();
+  renderView();
+  checkAchievements();
+  window.addEventListener("resize", function(){
+    if(App.currentView === "analytics") renderView();
+  });
+}
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
